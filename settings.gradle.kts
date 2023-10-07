@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "TreeComposeNavigation"
-include(":app")
+include(":samples")
