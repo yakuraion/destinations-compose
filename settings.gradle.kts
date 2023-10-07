@@ -16,5 +16,6 @@ dependencyResolutionManagement {
 rootProject.name = "TreeComposeNavigation"
 
 include(":core")
+include(":ksp")
 
 include(":samples")
