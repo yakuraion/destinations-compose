@@ -6,10 +6,17 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
+import pro.yakuraion.treecomposenavigation.ksp.args.lambda.LambdaArgumentsFilter
 
 class DestinationsProcessor(
     private val environment: SymbolProcessorEnvironment,
 ) : SymbolProcessor {
+
+    private val screenDeclarationFactory = ScreenDeclarationFactory(
+        argumentsFilters = listOf(
+            LambdaArgumentsFilter(),
+        )
+    )
 
     private val navigationCreator = NavigationCreator()
 
@@ -23,7 +30,7 @@ class DestinationsProcessor(
     }
 
     private fun processDestination(funcDeclaration: KSFunctionDeclaration) {
-        val screen = ScreenDeclaration(funcDeclaration)
+        val screen = screenDeclarationFactory.create(funcDeclaration)
         navigationCreator.create(environment.codeGenerator, screen)
     }
 }

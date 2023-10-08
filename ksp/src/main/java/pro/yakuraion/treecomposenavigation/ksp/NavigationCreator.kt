@@ -13,7 +13,7 @@ class NavigationCreator {
         screen: ScreenDeclaration,
     ) {
         val fileSpec = getFileSpec(screen)
-        val sourceFiles = listOf(screen.function.containingFile!!)
+        val sourceFiles = listOf(screen.containingFile)
         fileSpec.writeTo(codeGenerator, false, sourceFiles)
     }
 

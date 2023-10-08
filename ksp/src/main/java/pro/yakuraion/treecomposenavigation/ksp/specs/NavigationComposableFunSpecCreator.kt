@@ -5,7 +5,6 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.ksp.toTypeName
 import pro.yakuraion.treecomposenavigation.ksp.ScreenDeclaration
 
 private val function1Class = ClassName("kotlin", "Function1")
@@ -31,7 +30,7 @@ fun createNavigationComposableFunSpec(
 
     return FunSpec.builder(funName)
         .receiver(navGraphBuilderClass)
-        .addParameters(getLambdaParametersSpecs(screen))
+        .addParameters(screen.arguments.flatMap { it.getComposableParameters() })
         .addParameter(getRouteParameterSpec(screen))
         .addParameter(getTransitionParameterSpec("enterTransition", enterTransitionClass, "null"))
         .addParameter(getTransitionParameterSpec("exitTransition", exitTransitionClass, "null"))
@@ -55,13 +54,6 @@ fun createNavigationComposableFunSpec(
         .addScreenCallStatement(screen)
         .addStatement("}")
         .build()
-}
-
-private fun getLambdaParametersSpecs(screen: ScreenDeclaration): List<ParameterSpec> {
-    return screen.lambdaParameters.map { lambdaParameter ->
-        ParameterSpec.builder(lambdaParameter.name!!.asString(), lambdaParameter.type.toTypeName())
-            .build()
-    }
 }
 
 private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -89,10 +81,10 @@ private fun getTransitionParameterSpec(
 
 private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): FunSpec.Builder {
     val screenMember = MemberName(screen.packageName, screen.name)
-    val lambdaParametersString = screen.lambdaParameters.joinToString(separator = ",\n") { lambdaParameter ->
-        val paramName = lambdaParameter.name!!.asString()
-        "$paramName = $paramName"
-    }
+
+    val argsParametersString = screen.arguments
+        .joinToString(separator = ",\n") { "${it.name} = ${it.getScreenCallValueName()}" }
+
     return addStatement(
         """
             %M(
@@ -100,6 +92,6 @@ private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): F
             )
         """.trimIndent(),
         screenMember,
-        lambdaParametersString
+        argsParametersString
     )
 }
