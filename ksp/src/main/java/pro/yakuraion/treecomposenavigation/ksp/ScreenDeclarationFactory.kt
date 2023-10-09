@@ -1,10 +1,10 @@
 package pro.yakuraion.treecomposenavigation.ksp
 
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import pro.yakuraion.treecomposenavigation.ksp.args.ArgumentsFilter
+import pro.yakuraion.treecomposenavigation.ksp.parameters.ScreenParametersExtractor
 
 class ScreenDeclarationFactory(
-    private val argumentsFilters: List<ArgumentsFilter<*>>,
+    private val screenParametersExtractors: List<ScreenParametersExtractor<*>>,
 ) {
 
     fun create(screenFunction: KSFunctionDeclaration): ScreenDeclaration {
@@ -12,7 +12,7 @@ class ScreenDeclarationFactory(
             packageName = screenFunction.packageName.asString(),
             name = screenFunction.simpleName.getShortName(),
             containingFile = screenFunction.containingFile!!,
-            arguments = argumentsFilters.map { it.filter(screenFunction.parameters) }.flatten()
+            parameters = screenParametersExtractors.map { it.extract(screenFunction) }.flatten()
         )
     }
 }

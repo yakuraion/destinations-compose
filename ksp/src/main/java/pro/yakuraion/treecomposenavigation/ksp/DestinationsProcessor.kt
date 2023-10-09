@@ -6,19 +6,27 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
-import pro.yakuraion.treecomposenavigation.ksp.args.lambda.LambdaArgumentsFilter
+import pro.yakuraion.treecomposenavigation.ksp.parameters.lambda.LambdaParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.parameters.primitives.PrimitiveParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationComposableFunFunSpecCreator
+import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationNavigateToFunSpecCreator
 
-class DestinationsProcessor(
-    private val environment: SymbolProcessorEnvironment,
-) : SymbolProcessor {
+class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
     private val screenDeclarationFactory = ScreenDeclarationFactory(
-        argumentsFilters = listOf(
-            LambdaArgumentsFilter(),
+        screenParametersExtractors = listOf(
+            LambdaParametersExtractor(),
+            PrimitiveParametersExtractor(),
         )
     )
 
-    private val navigationCreator = NavigationCreator()
+    private val navigationCreator = NavigationCreator(
+        codeGenerator = environment.codeGenerator,
+        funSpecCreators = listOf(
+            NavigationComposableFunFunSpecCreator(),
+            NavigationNavigateToFunSpecCreator(),
+        )
+    )
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         resolver
@@ -31,6 +39,6 @@ class DestinationsProcessor(
 
     private fun processDestination(funcDeclaration: KSFunctionDeclaration) {
         val screen = screenDeclarationFactory.create(funcDeclaration)
-        navigationCreator.create(environment.codeGenerator, screen)
+        navigationCreator.create(screen)
     }
 }
