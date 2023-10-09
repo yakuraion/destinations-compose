@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import pro.yakuraion.treecomposenavigation.ksp.Import
-import pro.yakuraion.treecomposenavigation.ksp.ScreenDeclaration
+import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 
 class NavigationComposableFunFunSpecCreator : FunSpecCreator {
 

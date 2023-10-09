@@ -1,4 +1,4 @@
-package pro.yakuraion.treecomposenavigation.ksp
+package pro.yakuraion.treecomposenavigation.ksp.screendeclaration
 
 import com.google.devtools.ksp.symbol.KSFile
 import pro.yakuraion.treecomposenavigation.ksp.parameters.argument.ArgumentScreenParameter

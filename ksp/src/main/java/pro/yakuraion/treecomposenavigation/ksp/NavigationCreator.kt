@@ -3,6 +3,7 @@ package pro.yakuraion.treecomposenavigation.ksp
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
+import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 import pro.yakuraion.treecomposenavigation.ksp.specs.FunSpecCreator
 
 class NavigationCreator(

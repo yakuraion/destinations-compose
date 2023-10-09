@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import pro.yakuraion.treecomposenavigation.ksp.Import
-import pro.yakuraion.treecomposenavigation.ksp.ScreenDeclaration
+import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 
 class NavigationNavigateToFunSpecCreator : FunSpecCreator {
 

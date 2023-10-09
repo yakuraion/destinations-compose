@@ -8,6 +8,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
 import pro.yakuraion.treecomposenavigation.ksp.parameters.instant.LambdaParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.parameters.argument.PrimitiveParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclarationFactory
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationComposableFunFunSpecCreator
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationNavigateToFunSpecCreator
 
