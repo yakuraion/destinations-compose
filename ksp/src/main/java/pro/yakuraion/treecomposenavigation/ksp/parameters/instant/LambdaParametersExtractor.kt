@@ -1,8 +1,7 @@
-package pro.yakuraion.treecomposenavigation.ksp.parameters.lambda
+package pro.yakuraion.treecomposenavigation.ksp.parameters.instant
 
 import com.google.devtools.ksp.symbol.KSCallableReference
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import pro.yakuraion.treecomposenavigation.ksp.parameters.InstantScreenParameter
 import pro.yakuraion.treecomposenavigation.ksp.parameters.ScreenParametersExtractor
 
 class LambdaParametersExtractor : ScreenParametersExtractor<InstantScreenParameter> {

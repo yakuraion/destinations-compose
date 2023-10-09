@@ -1,10 +1,7 @@
-package pro.yakuraion.treecomposenavigation.ksp.parameters.primitives
+package pro.yakuraion.treecomposenavigation.ksp.parameters.argument
 
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ParameterSpec
-import pro.yakuraion.treecomposenavigation.ksp.parameters.ArgumentScreenParameter
-import pro.yakuraion.treecomposenavigation.ksp.parameters.QueryArgument
-import pro.yakuraion.treecomposenavigation.ksp.parameters.QueryValueArgument
 
 class PrimitiveScreenParameter(
     parameter: KSValueParameter,

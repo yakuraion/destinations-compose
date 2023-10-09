@@ -6,8 +6,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
-import pro.yakuraion.treecomposenavigation.ksp.parameters.lambda.LambdaParametersExtractor
-import pro.yakuraion.treecomposenavigation.ksp.parameters.primitives.PrimitiveParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.parameters.instant.LambdaParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.parameters.argument.PrimitiveParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationComposableFunFunSpecCreator
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationNavigateToFunSpecCreator
 

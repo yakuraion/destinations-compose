@@ -1,4 +1,4 @@
-package pro.yakuraion.treecomposenavigation.ksp.parameters.primitives
+package pro.yakuraion.treecomposenavigation.ksp.parameters.argument
 
 import com.google.devtools.ksp.symbol.KSClassifierReference
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
