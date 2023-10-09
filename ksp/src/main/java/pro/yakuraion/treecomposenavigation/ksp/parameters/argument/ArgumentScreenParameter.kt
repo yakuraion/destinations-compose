@@ -12,10 +12,10 @@ abstract class ArgumentScreenParameter(parameter: KSValueParameter) : ScreenPara
 
     abstract fun getNavigateToParametersSpecs(): List<ParameterSpec>
 
-    abstract fun getNavigateToQueryArguments(): List<QueryValueArgument>
+    abstract fun getNavigateToInFunctionCode(): String
+
+    abstract fun getNavigateToQueryCode(): String
 
 }
 
 class QueryArgument(val name: String)
-
-class QueryValueArgument(val name: String, val value: String)

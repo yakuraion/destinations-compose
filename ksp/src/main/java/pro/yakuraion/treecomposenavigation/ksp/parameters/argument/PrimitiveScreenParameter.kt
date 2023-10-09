@@ -27,8 +27,16 @@ class PrimitiveScreenParameter(
         return listOf(spec)
     }
 
-    override fun getNavigateToQueryArguments(): List<QueryValueArgument> {
-        return listOf(QueryValueArgument(name = name, value = name))
+    override fun getNavigateToInFunctionCode(): String {
+        return "val _${name} = ${name}${ if (isNullable) "?" else "" }.toString()"
+    }
+
+    override fun getNavigateToQueryCode(): String {
+        return if (isNullable) {
+            "\${ _${name}?.let { \"$name=_\${it}\" }.orEmpty() }"
+        } else {
+            "$name=\${_$name}"
+        }
     }
 
     enum class Type(val referencedName: String, val fromStringMethod: String) {
