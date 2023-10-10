@@ -55,7 +55,7 @@ class NavigateToFunCreator : FunCreator {
         val queryArguments = screen.argumentParameters.flatMap { it.getValueQueryArguments() }
         return addStatement(
             """
-                val queryArgs = listOf(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
+                val queryArgs = listOf<Pair<String, String?>>(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
                 val routeWithQuery = if (queryArgs.isEmpty()) route else route + "?" + queryArgs
                 navigate(
                     route = routeWithQuery,

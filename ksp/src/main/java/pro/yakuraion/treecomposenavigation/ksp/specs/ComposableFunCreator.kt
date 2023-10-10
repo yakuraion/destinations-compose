@@ -67,7 +67,7 @@ class ComposableFunCreator : FunCreator {
                 %M(
                     route = route + %S,
                     arguments = listOf(
-                        %L,
+                        %L
                     ),
                     enterTransition = enterTransition,
                     exitTransition = exitTransition,

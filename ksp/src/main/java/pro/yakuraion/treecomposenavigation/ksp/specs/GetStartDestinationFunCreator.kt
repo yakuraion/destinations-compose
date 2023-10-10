@@ -38,7 +38,7 @@ class GetStartDestinationFunCreator : FunCreator {
         val queryArguments = screen.argumentParameters.flatMap { it.getValueQueryArguments() }
         return addStatement(
             """
-                val queryArgs = listOf(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
+                val queryArgs = listOf<Pair<String, String?>>(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
                 return if (queryArgs.isEmpty()) route else route + "?" + queryArgs
             """.trimIndent(),
             queryArguments.joinToString(separator = ", ") { "\"${it.name}\" to ${it.valuePropertyName}" },
