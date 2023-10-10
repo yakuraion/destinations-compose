@@ -6,9 +6,10 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
-import pro.yakuraion.treecomposenavigation.ksp.parameters.instant.LambdaParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.parameters.argument.PrimitiveParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.parameters.instant.LambdaParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclarationFactory
+import pro.yakuraion.treecomposenavigation.ksp.specs.GetStartDestinationFunSpecCreator
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationComposableFunFunSpecCreator
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationNavigateToFunSpecCreator
 
@@ -26,6 +27,7 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         funSpecCreators = listOf(
             NavigationComposableFunFunSpecCreator(),
             NavigationNavigateToFunSpecCreator(),
+            GetStartDestinationFunSpecCreator(),
         )
     )
 
