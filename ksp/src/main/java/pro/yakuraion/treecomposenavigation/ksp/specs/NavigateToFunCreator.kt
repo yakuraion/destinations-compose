@@ -9,7 +9,7 @@ import com.squareup.kotlinpoet.asTypeName
 import pro.yakuraion.treecomposenavigation.ksp.Import
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 
-class NavigationNavigateToFunSpecCreator : FunSpecCreator {
+class NavigateToFunCreator : FunCreator {
 
     override fun getImports(): List<Import> {
         return emptyList()
@@ -23,23 +23,13 @@ class NavigationNavigateToFunSpecCreator : FunSpecCreator {
             .addParameters(getArgumentsParameters(screen))
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getNavOptionsBuilderReceiverParameterSpec())
-            .addStatement(getInFunctionCode(screen))
-            .addStatement(
-                """
-                val queryArgs = %L
-                val routeWithQuery = if (queryArgs.isNotEmpty()) route + "?" + queryArgs else route
-                navigate(
-                    route = routeWithQuery,
-                    builder = builder,
-                )
-                """.trimIndent(),
-                getRouteQueryCode(screen)
-            )
+            .addPropertiesStatement(screen)
+            .addNavigateStatement(screen)
             .build()
     }
 
     private fun getArgumentsParameters(screen: ScreenDeclaration): List<ParameterSpec> {
-        return screen.argumentParameters.flatMap { it.getNavigateToParametersSpecs() }
+        return screen.argumentParameters.flatMap { it.getArgumentsAsParametersSpecs() }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -55,13 +45,25 @@ class NavigationNavigateToFunSpecCreator : FunSpecCreator {
             .build()
     }
 
-    private fun getInFunctionCode(screen: ScreenDeclaration): String {
-        return screen.argumentParameters.joinToString(separator = "\n") { it.getNavigateToInFunctionCode() }
+    private fun FunSpec.Builder.addPropertiesStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        return screen.argumentParameters.fold(this) { builder, parameter ->
+            builder.addStatement(parameter.getPropertiesForValueQueryArgumentsCode())
+        }
     }
 
-    private fun getRouteQueryCode(screen: ScreenDeclaration): String {
-        val code = screen.argumentParameters.joinToString(separator = "&") { it.getNavigateToQueryCode() }
-        return "\"$code\".trim(\'&\')"
+    private fun FunSpec.Builder.addNavigateStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        val queryArguments = screen.argumentParameters.flatMap { it.getValueQueryArguments() }
+        return addStatement(
+            """
+                val queryArgs = listOf(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
+                val routeWithQuery = if (queryArgs.isEmpty()) route else route + "?" + queryArgs
+                navigate(
+                    route = routeWithQuery,
+                    builder = builder,
+                )
+            """.trimIndent(),
+            queryArguments.joinToString(separator = ", ") { "\"${it.name}\" to ${it.valuePropertyName}" },
+        )
     }
 
     companion object {

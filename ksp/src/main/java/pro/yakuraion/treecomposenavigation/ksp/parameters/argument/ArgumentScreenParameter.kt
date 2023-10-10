@@ -6,16 +6,17 @@ import pro.yakuraion.treecomposenavigation.ksp.parameters.ScreenParameter
 
 abstract class ArgumentScreenParameter(parameter: KSValueParameter) : ScreenParameter(parameter) {
 
-    abstract fun getComposableQueryArguments(): List<QueryArgument>
+    abstract fun getPatternQueryArguments(): List<PatternQueryArgument>
 
-    abstract fun getComposableCreateParameterValFromBackStackEntryCode(backStackEntryName: String): String
+    abstract fun getPropertiesForScreenCallCode(backStackEntryName: String, propertyName: String): String
 
-    abstract fun getNavigateToParametersSpecs(): List<ParameterSpec>
+    abstract fun getPropertiesForValueQueryArgumentsCode(): String
 
-    abstract fun getNavigateToInFunctionCode(): String
+    abstract fun getValueQueryArguments(): List<ValueQueryArgument>
 
-    abstract fun getNavigateToQueryCode(): String
-
+    abstract fun getArgumentsAsParametersSpecs(): List<ParameterSpec>
 }
 
-class QueryArgument(val name: String)
+class PatternQueryArgument(val name: String)
+
+class ValueQueryArgument(val name: String, val valuePropertyName: String)

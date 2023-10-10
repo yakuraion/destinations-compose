@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.FunSpec
 import pro.yakuraion.treecomposenavigation.ksp.Import
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 
-interface FunSpecCreator {
+interface FunCreator {
 
     fun getImports(): List<Import> = emptyList()
 

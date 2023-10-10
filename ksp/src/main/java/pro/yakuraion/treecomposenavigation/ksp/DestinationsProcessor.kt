@@ -9,9 +9,9 @@ import pro.yakuraion.treecomposenavigation.core.DestinationScreen
 import pro.yakuraion.treecomposenavigation.ksp.parameters.argument.PrimitiveParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.parameters.instant.LambdaParametersExtractor
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclarationFactory
-import pro.yakuraion.treecomposenavigation.ksp.specs.GetStartDestinationFunSpecCreator
-import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationComposableFunFunSpecCreator
-import pro.yakuraion.treecomposenavigation.ksp.specs.NavigationNavigateToFunSpecCreator
+import pro.yakuraion.treecomposenavigation.ksp.specs.GetStartDestinationFunCreator
+import pro.yakuraion.treecomposenavigation.ksp.specs.ComposableFunCreator
+import pro.yakuraion.treecomposenavigation.ksp.specs.NavigateToFunCreator
 
 class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
@@ -24,10 +24,10 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
 
     private val navigationCreator = NavigationCreator(
         codeGenerator = environment.codeGenerator,
-        funSpecCreators = listOf(
-            NavigationComposableFunFunSpecCreator(),
-            NavigationNavigateToFunSpecCreator(),
-            GetStartDestinationFunSpecCreator(),
+        funCreators = listOf(
+            ComposableFunCreator(),
+            NavigateToFunCreator(),
+            GetStartDestinationFunCreator(),
         )
     )
 

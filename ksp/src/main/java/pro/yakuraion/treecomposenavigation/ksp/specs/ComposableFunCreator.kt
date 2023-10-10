@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import pro.yakuraion.treecomposenavigation.ksp.Import
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 
-class NavigationComposableFunFunSpecCreator : FunSpecCreator {
+class ComposableFunCreator : FunCreator {
 
     override fun getImports(): List<Import> {
         return listOf(
@@ -22,7 +22,7 @@ class NavigationComposableFunFunSpecCreator : FunSpecCreator {
 
         return FunSpec.builder(funName)
             .receiver(navGraphBuilderClass)
-            .addParameters(screen.instantParameters.map { it.getComposableParameterSpec() })
+            .addParameters(screen.instantParameters.map { it.getParameterSpec() })
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getTransitionParameterSpec("enterTransition", enterTransitionClass, "null"))
             .addParameter(getTransitionParameterSpec("exitTransition", exitTransitionClass, "null"))
@@ -76,7 +76,7 @@ class NavigationComposableFunFunSpecCreator : FunSpecCreator {
                 ) { backStackEntry ->
             """.trimIndent(),
                 composableMember,
-                getRouteQueryArgsString(screen),
+                getQueryArgumentsString(screen),
                 getNavigationArgumentsString(screen),
             )
             .insideCode()
@@ -87,9 +87,9 @@ class NavigationComposableFunFunSpecCreator : FunSpecCreator {
      * Example:
      * "?arg1={arg1}&arg2={arg2}
      */
-    private fun getRouteQueryArgsString(screen: ScreenDeclaration): String {
+    private fun getQueryArgumentsString(screen: ScreenDeclaration): String {
         var result = ""
-        val routeQueryArgs = screen.argumentParameters.map { it.getComposableQueryArguments() }.flatten()
+        val routeQueryArgs = screen.argumentParameters.map { it.getPatternQueryArguments() }.flatten()
         if (routeQueryArgs.isNotEmpty()) {
             result = "?" + routeQueryArgs.joinToString(separator = "&") { "${it.name}={${it.name}}" }
         }
@@ -108,8 +108,13 @@ class NavigationComposableFunFunSpecCreator : FunSpecCreator {
     }
 
     private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val createValsCode = screen.argumentParameters.joinToString(separator = "\n") { parameter ->
-            parameter.getComposableCreateParameterValFromBackStackEntryCode("backStackEntry")
+        val builder = screen.argumentParameters.fold(this) { builder, parameter ->
+            builder.addStatement(
+                parameter.getPropertiesForScreenCallCode(
+                    backStackEntryName = "backStackEntry",
+                    propertyName = parameter.name,
+                )
+            )
         }
 
         val screenMember = MemberName(screen.packageName, screen.name)
@@ -117,14 +122,12 @@ class NavigationComposableFunFunSpecCreator : FunSpecCreator {
         val argsParametersString = screen.parameters
             .joinToString(separator = ",\n") { "${it.name} = ${it.name}" }
 
-        return addStatement(
+        return builder.addStatement(
             """
-            %L
             %M(
             %L
             )
         """.trimIndent(),
-            createValsCode,
             screenMember,
             argsParametersString
         )

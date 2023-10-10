@@ -4,11 +4,11 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
-import pro.yakuraion.treecomposenavigation.ksp.specs.FunSpecCreator
+import pro.yakuraion.treecomposenavigation.ksp.specs.FunCreator
 
 class NavigationCreator(
     private val codeGenerator: CodeGenerator,
-    private val funSpecCreators: List<FunSpecCreator>,
+    private val funCreators: List<FunCreator>,
 ) {
 
     fun create(screen: ScreenDeclaration) {
@@ -24,7 +24,7 @@ class NavigationCreator(
         return FileSpec.builder(screen.packageName, fileName)
             .indent("    ")
             .run {
-                funSpecCreators.fold(this) { builder, funSpecCreator ->
+                funCreators.fold(this) { builder, funSpecCreator ->
                     builder
                         .addImports(funSpecCreator.getImports())
                         .addFunction(funSpecCreator.createSpec(screen))

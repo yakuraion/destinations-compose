@@ -6,7 +6,7 @@ import pro.yakuraion.treecomposenavigation.ksp.parameters.ScreenParameter
 
 class InstantScreenParameter(parameter: KSValueParameter) : ScreenParameter(parameter) {
 
-    fun getComposableParameterSpec(): ParameterSpec {
+    fun getParameterSpec(): ParameterSpec {
         return ParameterSpec
             .builder(name, typeName)
             .build()

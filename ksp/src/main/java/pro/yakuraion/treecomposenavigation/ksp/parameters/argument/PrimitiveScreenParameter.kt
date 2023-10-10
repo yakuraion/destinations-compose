@@ -9,34 +9,35 @@ class PrimitiveScreenParameter(
     private val isNullable: Boolean,
 ) : ArgumentScreenParameter(parameter) {
 
-    override fun getComposableQueryArguments(): List<QueryArgument> {
-        return listOf(QueryArgument(name = name))
+    override fun getPatternQueryArguments(): List<PatternQueryArgument> {
+        return listOf(PatternQueryArgument(name))
     }
 
-    override fun getComposableCreateParameterValFromBackStackEntryCode(backStackEntryName: String): String {
+    override fun getPropertiesForScreenCallCode(backStackEntryName: String, propertyName: String): String {
         val fromStringMethod = if (isNullable) type.fromStringMethod else "${type.fromStringMethod}!!"
         return """
-            val $name = $backStackEntryName.arguments?.getString("$name")${fromStringMethod}
+            val $propertyName = $backStackEntryName.arguments?.getString("$name")${fromStringMethod}
         """.trimIndent()
     }
 
-    override fun getNavigateToParametersSpecs(): List<ParameterSpec> {
+    override fun getPropertiesForValueQueryArgumentsCode(): String {
+        return "val _${name} = ${name}${ if (isNullable) "?" else "" }.toString()"
+    }
+
+    override fun getValueQueryArguments(): List<ValueQueryArgument> {
+        return listOf(
+            ValueQueryArgument(
+                name = name,
+                valuePropertyName = "_$name",
+            )
+        )
+    }
+
+    override fun getArgumentsAsParametersSpecs(): List<ParameterSpec> {
         val spec = ParameterSpec
             .builder(name, typeName)
             .build()
         return listOf(spec)
-    }
-
-    override fun getNavigateToInFunctionCode(): String {
-        return "val _${name} = ${name}${ if (isNullable) "?" else "" }.toString()"
-    }
-
-    override fun getNavigateToQueryCode(): String {
-        return if (isNullable) {
-            "\${ _${name}?.let { \"$name=_\${it}\" }.orEmpty() }"
-        } else {
-            "$name=\${_$name}"
-        }
     }
 
     enum class Type(val referencedName: String, val fromStringMethod: String) {
