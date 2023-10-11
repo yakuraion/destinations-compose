@@ -16,7 +16,7 @@ import pro.yakuraion.treecomposenavigation.ksp.specs.NavigateToFunCreator
 class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
     private val screenDeclarationFactory = ScreenDeclarationFactory(
-        screenParametersExtractors = listOf(
+        parametersExtractors = listOf(
             LambdaParametersExtractor(),
             PrimitiveParametersExtractor(),
         )

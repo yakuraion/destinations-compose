@@ -4,7 +4,7 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ksp.toTypeName
 
-abstract class ScreenParameter(parameter: KSValueParameter) {
+abstract class Parameter(parameter: KSValueParameter) {
 
     val name: String = parameter.name!!.asString()
 

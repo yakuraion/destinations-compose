@@ -3,11 +3,11 @@ package pro.yakuraion.treecomposenavigation.ksp.parameters.argument
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ParameterSpec
 
-class PrimitiveScreenParameter(
+class PrimitiveParameter(
     parameter: KSValueParameter,
     private val type: Type,
     private val isNullable: Boolean,
-) : ArgumentScreenParameter(parameter) {
+) : ArgumentParameter(parameter) {
 
     override fun getPatternQueryArguments(): List<PatternQueryArgument> {
         return listOf(PatternQueryArgument(name))

@@ -2,9 +2,9 @@ package pro.yakuraion.treecomposenavigation.ksp.parameters.argument
 
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ParameterSpec
-import pro.yakuraion.treecomposenavigation.ksp.parameters.ScreenParameter
+import pro.yakuraion.treecomposenavigation.ksp.parameters.Parameter
 
-abstract class ArgumentScreenParameter(parameter: KSValueParameter) : ScreenParameter(parameter) {
+abstract class ArgumentParameter(parameter: KSValueParameter) : Parameter(parameter) {
 
     abstract fun getPatternQueryArguments(): List<PatternQueryArgument>
 
