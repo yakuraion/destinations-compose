@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation(project(":core"))
     ksp(project(":ksp"))
+    ksp(project(":ksp-viewmodel-koin"))
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -59,4 +60,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.4")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 }
