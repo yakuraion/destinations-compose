@@ -1,8 +1,8 @@
-package pro.yakuraion.treecomposenavigation.ksp
+package pro.yakuraion.treecomposenavigation.kspcore
 
 import com.squareup.kotlinpoet.FileSpec
 
-class Import(val packageName: String, val name: String)
+data class Import(val packageName: String, val name: String)
 
 fun FileSpec.Builder.addImports(list: List<Import>): FileSpec.Builder {
     return list.fold(this) { builder, import ->

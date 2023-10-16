@@ -9,8 +9,8 @@ java {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":ksp-core"))
+    api(project(":core"))
 
-    compileOnly(project(":ksp-viewmodel-koin"))
+    api("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
+    api("com.squareup:kotlinpoet-ksp:1.14.2")
 }

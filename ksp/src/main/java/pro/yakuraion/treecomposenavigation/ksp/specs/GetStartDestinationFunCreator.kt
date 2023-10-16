@@ -6,7 +6,7 @@ import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclarati
 
 class GetStartDestinationFunCreator : FunCreator {
 
-    override fun createSpec(screen: ScreenDeclaration): FunSpec {
+    override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec {
         val funName = "get${screen.name}StartDestination"
 
         return FunSpec.builder(funName)
@@ -19,7 +19,7 @@ class GetStartDestinationFunCreator : FunCreator {
     }
 
     private fun getArgumentsParameters(screen: ScreenDeclaration): List<ParameterSpec> {
-        return screen.argumentParameters.flatMap { it.getArgumentsAsParametersSpecs() }
+        return screen.argumentParameters.flatMap { it.getArgumentsNavigationParametersSpecs() }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -30,7 +30,7 @@ class GetStartDestinationFunCreator : FunCreator {
 
     private fun FunSpec.Builder.addPropertiesStatement(screen: ScreenDeclaration): FunSpec.Builder {
         return screen.argumentParameters.fold(this) { builder, parameter ->
-            builder.addStatement(parameter.getPropertiesForValueQueryArgumentsCode())
+            builder.addStatement(parameter.getPropertiesForValueQueryArgumentsStatement())
         }
     }
 

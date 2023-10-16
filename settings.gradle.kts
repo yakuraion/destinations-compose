@@ -17,5 +17,7 @@ rootProject.name = "TreeComposeNavigation"
 
 include(":core")
 include(":ksp")
+include(":ksp-core")
+include(":ksp-viewmodel-koin")
 
 include(":samples")

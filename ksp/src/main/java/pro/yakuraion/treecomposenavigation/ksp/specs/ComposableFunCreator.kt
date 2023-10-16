@@ -5,8 +5,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import pro.yakuraion.treecomposenavigation.ksp.Import
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
+import pro.yakuraion.treecomposenavigation.kspcore.Import
 
 class ComposableFunCreator : FunCreator {
 
@@ -17,12 +17,12 @@ class ComposableFunCreator : FunCreator {
         )
     }
 
-    override fun createSpec(screen: ScreenDeclaration): FunSpec {
+    override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec {
         val funName = "${screen.decapitalizedName}Composable"
 
         return FunSpec.builder(funName)
             .receiver(navGraphBuilderClass)
-            .addParameters(screen.instantParameters.map { it.getParameterSpec() })
+            .addParameters(screen.instantParameters.map { it.getNavigationParameterSpec() })
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getTransitionParameterSpec("enterTransition", enterTransitionClass, "null"))
             .addParameter(getTransitionParameterSpec("exitTransition", exitTransitionClass, "null"))
@@ -109,12 +109,7 @@ class ComposableFunCreator : FunCreator {
 
     private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): FunSpec.Builder {
         val builder = screen.argumentParameters.fold(this) { builder, parameter ->
-            builder.addStatement(
-                parameter.getPropertiesForScreenCallCode(
-                    backStackEntryName = "backStackEntry",
-                    propertyName = parameter.name,
-                )
-            )
+            builder.addStatement(parameter.getPropertiesForScreenCallStatement(backStackEntryName = "backStackEntry"))
         }
 
         val screenMember = MemberName(screen.packageName, screen.name)
@@ -145,6 +140,5 @@ class ComposableFunCreator : FunCreator {
             ClassName("androidx.compose.animation", "AnimatedContentTransitionScope")
         private val enterTransitionClass = ClassName("androidx.compose.animation", "EnterTransition")
         private val exitTransitionClass = ClassName("androidx.compose.animation", "ExitTransition")
-
     }
 }

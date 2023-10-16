@@ -5,6 +5,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
 import pro.yakuraion.treecomposenavigation.ksp.specs.FunCreator
+import pro.yakuraion.treecomposenavigation.kspcore.addImports
 
 class NavigationCreator(
     private val codeGenerator: CodeGenerator,
@@ -13,7 +14,7 @@ class NavigationCreator(
 
     fun create(screen: ScreenDeclaration) {
         val fileSpec = getFileSpec(screen)
-        val sourceFiles = listOf(screen.containingFile)
+        val sourceFiles = listOf(screen.ksContainingFile)
         fileSpec.writeTo(codeGenerator, false, sourceFiles)
     }
 
@@ -21,13 +22,14 @@ class NavigationCreator(
         screen: ScreenDeclaration,
     ): FileSpec {
         val fileName = "${screen.name}Navigation"
+        val imports = funCreators.flatMap { it.getImports() } + screen.parameters.flatMap { it.getImports() }
         return FileSpec.builder(screen.packageName, fileName)
             .indent("    ")
             .run {
                 funCreators.fold(this) { builder, funSpecCreator ->
                     builder
-                        .addImports(funSpecCreator.getImports())
-                        .addFunction(funSpecCreator.createSpec(screen))
+                        .addImports(imports.distinct())
+                        .addFunction(funSpecCreator.createKpFunSpec(screen))
                 }
             }
             .build()
