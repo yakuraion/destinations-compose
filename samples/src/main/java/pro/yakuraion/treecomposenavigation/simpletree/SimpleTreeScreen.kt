@@ -24,10 +24,12 @@ fun SimpleTreeScreen() {
                     arg2 = 2f,
                     arg3 = '3',
                     arg4 = "4",
+                    arg5 = SerializableParameter(first = 42, second = "Sense of life"),
                     nArg1 = null,
                     nArg2 = 13f,
                     nArg3 = null,
                     nArg4 = "foo",
+                    nArg5 = null,
                 )
             }
         )
