@@ -6,30 +6,62 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.asTypeName
-import pro.yakuraion.treecomposenavigation.kspcore.Import
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
+import pro.yakuraion.treecomposenavigation.kspcore.Import
 
-class NavigateToFunCreator : FunCreator {
+class NavigateFunCreator(private val type: Type) : FunCreator {
 
     override fun getImports(): List<Import> {
         return emptyList()
     }
 
     override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec {
+        return when (type) {
+            Type.NAVIGATE_TO -> createNavigateToFunSpec(screen)
+            Type.GET_START_DESTINATION -> createGetStartDestinationFunSpec(screen)
+        }
+    }
+
+    private fun createNavigateToFunSpec(screen: ScreenDeclaration): FunSpec {
         val funName = "navigateTo${screen.name}"
 
         return FunSpec.builder(funName)
             .receiver(navControllerClass)
-            .addParameters(getArgumentsParameters(screen))
+            .addNavigateParameters(screen)
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getNavOptionsBuilderReceiverParameterSpec())
             .addPropertiesStatement(screen)
-            .addNavigateStatement(screen)
+            .addRouteWithQueryStatement(screen)
+            .addStatement("""
+                navigate(
+                    route = routeWithQuery,
+                    builder = builder,
+                )
+            """.trimIndent())
             .build()
     }
 
-    private fun getArgumentsParameters(screen: ScreenDeclaration): List<ParameterSpec> {
-        return screen.argumentParameters.flatMap { it.getArgumentsNavigationParametersSpecs() }
+    private fun createGetStartDestinationFunSpec(screen: ScreenDeclaration): FunSpec {
+        val funName = "get${screen.name}StartDestination"
+
+        return FunSpec.builder(funName)
+            .returns(String::class)
+            .addNavigateParameters(screen)
+            .addParameter(getRouteParameterSpec(screen))
+            .addPropertiesStatement(screen)
+            .addRouteWithQueryStatement(screen)
+            .addStatement("""
+                return routeWithQuery
+            """.trimIndent())
+            .build()
+    }
+
+    private fun FunSpec.Builder.addNavigateParameters(screen: ScreenDeclaration): FunSpec.Builder {
+        return screen.parameters.fold(this) { builder, parameter ->
+            with(parameter) {
+                builder.addNavigateParameters()
+            }
+        }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -46,25 +78,23 @@ class NavigateToFunCreator : FunCreator {
     }
 
     private fun FunSpec.Builder.addPropertiesStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        return screen.argumentParameters.fold(this) { builder, parameter ->
-            builder.addStatement(parameter.getPropertiesForValueQueryArgumentsStatement())
+        return screen.parameters.fold(this) { builder, parameter ->
+            builder.addStatement(parameter.getNavigateCreateRouteArgumentPropertiesCode())
         }
     }
 
-    private fun FunSpec.Builder.addNavigateStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val queryArguments = screen.argumentParameters.flatMap { it.getValueQueryArguments() }
+    private fun FunSpec.Builder.addRouteWithQueryStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        val routeArguments = screen.parameters.flatMap { it.getNavigateRouteArguments() }
         return addStatement(
             """
                 val queryArgs = listOf<Pair<String, String?>>(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
                 val routeWithQuery = if (queryArgs.isEmpty()) route else route + "?" + queryArgs
-                navigate(
-                    route = routeWithQuery,
-                    builder = builder,
-                )
             """.trimIndent(),
-            queryArguments.joinToString(separator = ", ") { "\"${it.name}\" to ${it.valuePropertyName}" },
+            routeArguments.joinToString(separator = ", ") { "\"${it.name}\" to ${it.propertyName}" },
         )
     }
+
+    enum class Type { NAVIGATE_TO, GET_START_DESTINATION }
 
     companion object {
 

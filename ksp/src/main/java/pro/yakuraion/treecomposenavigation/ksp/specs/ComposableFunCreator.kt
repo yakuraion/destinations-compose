@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclaration
+import pro.yakuraion.treecomposenavigation.kspcore.BACK_STACK_ENTRY_NAME
 import pro.yakuraion.treecomposenavigation.kspcore.Import
 
 class ComposableFunCreator : FunCreator {
@@ -22,7 +23,7 @@ class ComposableFunCreator : FunCreator {
 
         return FunSpec.builder(funName)
             .receiver(navGraphBuilderClass)
-            .addParameters(screen.instantParameters.map { it.getNavigationParameterSpec() })
+            .addComposableParameters(screen)
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getTransitionParameterSpec("enterTransition", enterTransitionClass, "null"))
             .addParameter(getTransitionParameterSpec("exitTransition", exitTransitionClass, "null"))
@@ -32,6 +33,14 @@ class ComposableFunCreator : FunCreator {
                 addScreenCallStatement(screen)
             }
             .build()
+    }
+
+    private fun FunSpec.Builder.addComposableParameters(screen: ScreenDeclaration): FunSpec.Builder {
+        return screen.parameters.fold(this) { builder, parameter ->
+            with(parameter) {
+                builder.addComposableParameters()
+            }
+        }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -73,7 +82,7 @@ class ComposableFunCreator : FunCreator {
                     exitTransition = exitTransition,
                     popEnterTransition = popEnterTransition,
                     popExitTransition = popExitTransition,
-                ) { backStackEntry ->
+                ) { $BACK_STACK_ENTRY_NAME ->
             """.trimIndent(),
                 composableMember,
                 getQueryArgumentsString(screen),
@@ -89,7 +98,7 @@ class ComposableFunCreator : FunCreator {
      */
     private fun getQueryArgumentsString(screen: ScreenDeclaration): String {
         var result = ""
-        val routeQueryArgs = screen.argumentParameters.map { it.getPatternQueryArguments() }.flatten()
+        val routeQueryArgs = screen.parameters.map { it.getComposableRouteArguments() }.flatten()
         if (routeQueryArgs.isNotEmpty()) {
             result = "?" + routeQueryArgs.joinToString(separator = "&") { "${it.name}={${it.name}}" }
         }
@@ -102,14 +111,15 @@ class ComposableFunCreator : FunCreator {
      * navArgument("arg2"} { type = NavType.String; nullable = true },
      */
     private fun getNavigationArgumentsString(screen: ScreenDeclaration): String {
-        return screen.argumentParameters.joinToString(separator = ",\n") {
-            "navArgument(\"${it.name}\") { type = NavType.StringType; nullable = true }"
-        }
+        return screen.parameters.flatMap { it.getComposableRouteArguments() }
+            .joinToString(separator = ",\n") { routeArgument ->
+                "navArgument(\"${routeArgument.name}\") { type = NavType.StringType; nullable = true }"
+            }
     }
 
     private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val builder = screen.argumentParameters.fold(this) { builder, parameter ->
-            builder.addStatement(parameter.getPropertiesForScreenCallStatement(backStackEntryName = "backStackEntry"))
+        val builder = screen.parameters.fold(this) { builder, parameter ->
+            builder.addStatement(parameter.getComposableCreateScreenParameterPropertiesCode())
         }
 
         val screenMember = MemberName(screen.packageName, screen.name)

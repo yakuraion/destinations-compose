@@ -1,18 +1,22 @@
 package pro.yakuraion.treecomposenavigation.ksp.screendeclaration
 
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import pro.yakuraion.treecomposenavigation.kspcore.parameters.ScreenParametersExtractor
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.ParameterConverter
 
 class ScreenDeclarationFactory(
-    private val parametersExtractors: List<ScreenParametersExtractor<*>>,
+    private val parametersConverters: List<ParameterConverter<*>>,
 ) {
 
     fun create(ksScreenFunction: KSFunctionDeclaration): ScreenDeclaration {
+        val parameters = ksScreenFunction.parameters.mapNotNull { ksParameter ->
+            parametersConverters.firstNotNullOfOrNull { it.convert(ksParameter) }
+        }
+
         return ScreenDeclaration(
             packageName = ksScreenFunction.packageName.asString(),
             name = ksScreenFunction.simpleName.getShortName(),
             ksContainingFile = ksScreenFunction.containingFile!!,
-            parameters = parametersExtractors.map { it.extract(ksScreenFunction) }.flatten()
+            parameters = parameters,
         )
     }
 }

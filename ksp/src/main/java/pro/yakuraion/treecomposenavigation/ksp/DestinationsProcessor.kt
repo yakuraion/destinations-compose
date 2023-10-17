@@ -8,25 +8,26 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
 import pro.yakuraion.treecomposenavigation.ksp.screendeclaration.ScreenDeclarationFactory
 import pro.yakuraion.treecomposenavigation.ksp.specs.ComposableFunCreator
-import pro.yakuraion.treecomposenavigation.ksp.specs.GetStartDestinationFunCreator
-import pro.yakuraion.treecomposenavigation.ksp.specs.NavigateToFunCreator
-import pro.yakuraion.treecomposenavigation.kspcore.parameters.ScreenParametersExtractor
-import pro.yakuraion.treecomposenavigation.kspcore.parameters.primitive.PrimitiveScreenParametersExtractor
-import pro.yakuraion.treecomposenavigation.kspcore.parameters.lambda.LambdaScreenParametersExtractor
+import pro.yakuraion.treecomposenavigation.ksp.specs.NavigateFunCreator
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.ParameterConverter
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.lambda.LambdaParameterConverter
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.primitive.PrimitiveParameterConverter
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.serializable.SerializableParameterConverter
 
 class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
-    private val viewModelKoinExtractorClass: Class<*>? = try {
-        Class.forName("pro.yakuraion.treecomposenavigation.kspviewmodelkoin.parameters.ViewModelScreenParametersExtractor")
+    private val viewModelKoinConverterClass: Class<*>? = try {
+        Class.forName("pro.yakuraion.treecomposenavigation.kspviewmodelkoin.parameters.ViewModelParameterConverter")
     } catch (e: ClassNotFoundException) {
         null
     }
 
     private val screenDeclarationFactory = ScreenDeclarationFactory(
-        parametersExtractors = listOfNotNull(
-            LambdaScreenParametersExtractor(),
-            PrimitiveScreenParametersExtractor(),
-            viewModelKoinExtractorClass?.getConstructor()?.newInstance() as ScreenParametersExtractor<*>?,
+        parametersConverters = listOfNotNull(
+            LambdaParameterConverter(),
+            PrimitiveParameterConverter(),
+            SerializableParameterConverter(),
+            viewModelKoinConverterClass?.getConstructor()?.newInstance() as ParameterConverter<*>?,
         )
     )
 
@@ -34,8 +35,8 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         codeGenerator = environment.codeGenerator,
         funCreators = listOf(
             ComposableFunCreator(),
-            NavigateToFunCreator(),
-            GetStartDestinationFunCreator(),
+            NavigateFunCreator(NavigateFunCreator.Type.NAVIGATE_TO),
+            NavigateFunCreator(NavigateFunCreator.Type.GET_START_DESTINATION),
         )
     )
 
