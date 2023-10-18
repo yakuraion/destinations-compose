@@ -18,7 +18,7 @@ class SerializableParameter(ksParameter: KSValueParameter) : Parameter(ksParamet
 
     override fun getImports(): List<Import> {
         return listOf(
-            Import("java.util", "Base64"),
+            Import("android.util", "Base64"),
             Import("java.io", "ByteArrayInputStream"),
             Import("java.io", "ByteArrayOutputStream"),
             Import("java.io", "ObjectInputStream"),
@@ -39,7 +39,7 @@ class SerializableParameter(ksParameter: KSValueParameter) : Parameter(ksParamet
         }
         return """
             val ${name}Encoded = $BACK_STACK_ENTRY_NAME.arguments?.getString("$name")
-            val ${name}Data = Base64.getDecoder().decode(${name}Encoded)
+            val ${name}Data = Base64.decode(${name}Encoded, Base64.NO_WRAP)
             val ${name}OIS = ObjectInputStream(ByteArrayInputStream(${name}Data))
             val $name = ${name}OIS.readObject() as $className
             ${name}OIS.close()
@@ -60,7 +60,7 @@ class SerializableParameter(ksParameter: KSValueParameter) : Parameter(ksParamet
             val ${name}OOS = ObjectOutputStream(${name}BAOS)
             ${name}OOS.writeObject($name)
             ${name}OOS.close()
-            val _${name} = Base64.getEncoder().encodeToString(${name}BAOS.toByteArray())
+            val _${name} = Base64.encodeToString(${name}BAOS.toByteArray(), Base64.NO_WRAP)
         """.trimIndent()
     }
 
