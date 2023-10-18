@@ -30,7 +30,6 @@ fun ViewModelTreeScreen() {
                 navController.navigateToViewModelScreen2(
                     arg1 = 12L,
                     arg2 = null,
-                    arg3 = 'T',
                     arg4 = ViewModelSerializableParameter(11, true),
                     arg5 = ViewModelParcelableParameter(3.14f, null),
                 )

@@ -1,15 +1,19 @@
 package pro.yakuraion.treecomposenavigation.kspviewmodelkoin.parameters
 
+import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAllSuperTypes
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.FunSpec
+import pro.yakuraion.treecomposenavigation.core.NotDestinationParameter
 import pro.yakuraion.treecomposenavigation.kspcore.Import
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.Parameter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.parcelable.ParcelableParameterConverter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.primitive.PrimitiveParameterConverter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.serializable.SerializableParameterConverter
 
+@OptIn(KspExperimental::class)
 class ViewModelParameter(ksParameter: KSValueParameter) : Parameter(ksParameter) {
 
     private val ksClassDeclaration: KSClassDeclaration = getViewModelKsClassDeclaration(ksParameter)
@@ -25,10 +29,14 @@ class ViewModelParameter(ksParameter: KSValueParameter) : Parameter(ksParameter)
             ParcelableParameterConverter(),
             SerializableParameterConverter(),
         )
-        val primaryConstructorParameters = ksClassDeclaration.primaryConstructor?.parameters.orEmpty()
-        innerParameters = primaryConstructorParameters.mapNotNull { ksInnerParameter ->
-            innerParametersConverters.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
-        }
+        innerParameters = ksClassDeclaration
+            .primaryConstructor
+            ?.parameters
+            .orEmpty()
+            .filter { it.getAnnotationsByType(NotDestinationParameter::class).none() }
+            .mapNotNull { ksInnerParameter ->
+                innerParametersConverters.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
+            }
     }
 
     override fun getImports(): List<Import> {
