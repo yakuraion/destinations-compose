@@ -23,6 +23,7 @@ fun ViewModelScreen2(
             arg2 = ${viewModel.arg2},
             arg3 = ${viewModel.arg3},
             arg4 = ${viewModel.arg4},
+            arg5 = ${viewModel.arg5},
         """.trimIndent(),
         )
         Button(onClick = onGoToViewModelScreen3Click) {

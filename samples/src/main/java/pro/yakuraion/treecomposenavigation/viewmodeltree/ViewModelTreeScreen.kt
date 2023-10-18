@@ -8,6 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
 import pro.yakuraion.treecomposenavigation.viewmodeltree.screen1.getViewModelScreen1StartDestination
 import pro.yakuraion.treecomposenavigation.viewmodeltree.screen1.viewModelScreen1Composable
+import pro.yakuraion.treecomposenavigation.viewmodeltree.screen2.ViewModelParcelableParameter
+import pro.yakuraion.treecomposenavigation.viewmodeltree.screen2.ViewModelSerializableParameter
 import pro.yakuraion.treecomposenavigation.viewmodeltree.screen2.navigateToViewModelScreen2
 import pro.yakuraion.treecomposenavigation.viewmodeltree.screen2.viewModelScreen2Composable
 import pro.yakuraion.treecomposenavigation.viewmodeltree.screen3.navigateToViewModelScreen3
@@ -28,8 +30,9 @@ fun ViewModelTreeScreen() {
                 navController.navigateToViewModelScreen2(
                     arg1 = 12L,
                     arg2 = null,
-                    arg3 = true,
-                    arg4 = 'T',
+                    arg3 = 'T',
+                    arg4 = ViewModelSerializableParameter(11, true),
+                    arg5 = ViewModelParcelableParameter(3.14f, null),
                 )
             }
         )
