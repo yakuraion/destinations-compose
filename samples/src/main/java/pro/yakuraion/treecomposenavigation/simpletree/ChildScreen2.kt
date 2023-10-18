@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kotlinx.parcelize.Parcelize
+import pro.yakuraion.treecomposenavigation.core.DestinationOptionalParameter
 import pro.yakuraion.treecomposenavigation.core.DestinationScreen
 import java.io.Serializable
 
@@ -16,14 +17,14 @@ import java.io.Serializable
 fun ChildScreen2(
     arg1: Int,
     arg2: Float,
-    arg3: Char,
+    @DestinationOptionalParameter(defaultValue = "\'M\'") arg3: Char,
     arg4: String,
     arg5: SerializableParameter,
     arg6: ParcelableParameter,
-    nArg1: Int?,
+    @DestinationOptionalParameter(defaultValue = "10") nArg1: Int?,
     nArg2: Float?,
     nArg3: Char?,
-    nArg4: String?,
+    @DestinationOptionalParameter(defaultValue = "null") nArg4: String?,
     nArg5: SerializableParameter?,
     nArg6: ParcelableParameter?,
     onGoToChildScreen3Click: () -> Unit,
