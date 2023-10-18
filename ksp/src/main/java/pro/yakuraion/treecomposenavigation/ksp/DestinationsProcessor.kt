@@ -11,6 +11,7 @@ import pro.yakuraion.treecomposenavigation.ksp.specs.ComposableFunCreator
 import pro.yakuraion.treecomposenavigation.ksp.specs.NavigateFunCreator
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.ParameterConverter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.lambda.LambdaParameterConverter
+import pro.yakuraion.treecomposenavigation.kspcore.parameters.parcelable.ParcelableParameterConverter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.primitive.PrimitiveParameterConverter
 import pro.yakuraion.treecomposenavigation.kspcore.parameters.serializable.SerializableParameterConverter
 
@@ -26,6 +27,7 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         parametersConverters = listOfNotNull(
             LambdaParameterConverter(),
             PrimitiveParameterConverter(),
+            ParcelableParameterConverter(),
             SerializableParameterConverter(),
             viewModelKoinConverterClass?.getConstructor()?.newInstance() as ParameterConverter<*>?,
         )
