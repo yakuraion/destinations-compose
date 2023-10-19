@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "pro.yakuraion.treecomposenavigation"
+    namespace = "pro.yakuraion.destinationscompose"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "pro.yakuraion.treecomposenavigation"
+        applicationId = "pro.yakuraion.destinationscompose"
         minSdk = 23
         targetSdk = 34
         versionCode = 1

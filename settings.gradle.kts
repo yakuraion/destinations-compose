@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TreeComposeNavigation"
+rootProject.name = "DestinationsCompose"
 
 include(":core")
 include(":ksp")
