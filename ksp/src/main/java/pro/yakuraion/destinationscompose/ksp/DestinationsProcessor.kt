@@ -18,7 +18,7 @@ import pro.yakuraion.destinationscompose.kspcore.parameters.serializable.Seriali
 class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
     private val viewModelKoinConverterClass: Class<*>? = try {
-        Class.forName("pro.yakuraion.destinationscompose.kspviewmodelkoin.parameters.ViewModelParameterConverter")
+        Class.forName(VIEW_MODEL_KOIN_CONVERTER_CLASS)
     } catch (e: ClassNotFoundException) {
         null
     }
@@ -54,5 +54,10 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
     private fun processDestination(funcDeclaration: KSFunctionDeclaration) {
         val screen = screenDeclarationFactory.create(funcDeclaration)
         navigationCreator.create(screen)
+    }
+
+    companion object {
+        private const val VIEW_MODEL_KOIN_CONVERTER_CLASS =
+            "pro.yakuraion.destinationscompose.kspviewmodelkoin.parameters.ViewModelParameterConverter"
     }
 }
