@@ -4,17 +4,19 @@ import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.FunSpec
-import pro.yakuraion.destinationscompose.kspcore.BACK_STACK_ENTRY_NAME
 import pro.yakuraion.destinationscompose.kspcore.Import
-import pro.yakuraion.destinationscompose.kspcore.parameters.Parameter
+import pro.yakuraion.destinationscompose.kspcore.parameters.NavArgParameter
 import java.io.Serializable
 
-class SerializableParameter(ksParameter: KSValueParameter) : Parameter(ksParameter) {
+class SerializableParameter(ksParameter: KSValueParameter) : NavArgParameter(ksParameter) {
 
-    private val ksClassDeclaration: KSClassDeclaration = getSerializableKsClassDeclaration(ksParameter)
-        ?: error("ksParameter is not Serializable")
+    private val ksClassDeclaration: KSClassDeclaration = getSerializableKsClassDeclaration(ksParameter) ?: error("ksParameter is not Serializable")
 
     private val isNullable: Boolean = ksParameter.type.resolve().isMarkedNullable
+
+    private val composableNavArg = ComposableNavArg(name, null)
+
+    private val navigateParameter = NavigateParameter(name, kpTypeName, null)
 
     override fun getImports(): List<Import> {
         return listOf(
@@ -26,42 +28,33 @@ class SerializableParameter(ksParameter: KSValueParameter) : Parameter(ksParamet
         )
     }
 
-    override fun FunSpec.Builder.addComposableParameters(): FunSpec.Builder = this
+    override fun getComposableNavArgs(): List<ComposableNavArg> = listOf(composableNavArg)
 
-    override fun getComposableRouteArguments(): List<ComposableRouteArgument> {
-        return listOf(ComposableRouteArgument(name))
+    override fun FunSpec.Builder.createParameterValFromBackStack(backStackName: String): FunSpec.Builder {
+
+        val rawClassName = ksClassDeclaration.qualifiedName?.asString().orEmpty()
+        val className = if (isNullable) "$rawClassName?" else rawClassName
+        val valName = parameterValFromBackStackName
+        return this
+            .addStatement("val ${valName}Encoded = $backStackName.arguments?.getString(\"${composableNavArg.name}\")")
+            .addStatement("val ${valName}Data = Base64.decode(${valName}Encoded, Base64.NO_WRAP)")
+            .addStatement("val ${valName}OIS = ObjectInputStream(ByteArrayInputStream(${valName}Data))")
+            .addStatement("val $valName = ${valName}OIS.readObject() as $className")
+            .addStatement("${valName}OIS.close()")
+            .addStatement("")
     }
 
-    override fun getComposableCreateScreenParameterPropertiesCode(): String {
-        var className = ksClassDeclaration.qualifiedName?.asString().orEmpty()
-        if (isNullable) {
-            className = "$className?"
-        }
-        return """
-            val ${name}Encoded = $BACK_STACK_ENTRY_NAME.arguments?.getString("$name")
-            val ${name}Data = Base64.decode(${name}Encoded, Base64.NO_WRAP)
-            val ${name}OIS = ObjectInputStream(ByteArrayInputStream(${name}Data))
-            val $name = ${name}OIS.readObject() as $className
-            ${name}OIS.close()
-        """.trimIndent()
-    }
+    override fun getNavigateParameters(): List<NavigateParameter> = listOf(navigateParameter)
 
-    override fun FunSpec.Builder.addNavigateParameters(): FunSpec.Builder {
-        return addParameter(name, kpTypeName)
-    }
-
-    override fun getNavigateRouteArguments(): List<NavigateRouteArgument> {
-        return listOf(NavigateRouteArgument(name, "_$name"))
-    }
-
-    override fun getNavigateCreateRouteArgumentPropertiesCode(): String {
-        return """
-            val ${name}BAOS = ByteArrayOutputStream()
-            val ${name}OOS = ObjectOutputStream(${name}BAOS)
-            ${name}OOS.writeObject($name)
-            ${name}OOS.close()
-            val _${name} = Base64.encodeToString(${name}BAOS.toByteArray(), Base64.NO_WRAP)
-        """.trimIndent()
+    override fun FunSpec.Builder.createNavArgsValsFromNavigateParameters(): FunSpec.Builder {
+        val valName = composableNavArg.valInsideNavigateFunName
+        return this
+            .addStatement("val ${valName}BAOS = ByteArrayOutputStream()")
+            .addStatement("val ${valName}OOS = ObjectOutputStream(${valName}BAOS)")
+            .addStatement("${valName}OOS.writeObject(${navigateParameter.name})")
+            .addStatement("${valName}OOS.close()")
+            .addStatement("val $valName = Base64.encodeToString(${valName}BAOS.toByteArray(), Base64.NO_WRAP)")
+            .addStatement("")
     }
 
     companion object {

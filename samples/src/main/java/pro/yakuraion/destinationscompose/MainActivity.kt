@@ -16,8 +16,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import pro.yakuraion.destinationscompose.simpletree.navigateToSimpleTreeScreen
-import pro.yakuraion.destinationscompose.simpletree.simpleTreeScreenComposable
+import pro.yakuraion.destinationscompose.simplegraph.navigateToSimpleRootScreen
+import pro.yakuraion.destinationscompose.simplegraph.simpleRootScreenComposable
 import pro.yakuraion.destinationscompose.viewmodeltree.navigateToViewModelTreeScreen
 import pro.yakuraion.destinationscompose.viewmodeltree.viewModelTreeScreenComposable
 
@@ -38,12 +38,12 @@ class MainActivity : FragmentActivity() {
                     composable(route = "picker") {
                         Picker(onClick = { example ->
                             when (example) {
-                                Example.SIMPLE_TREE -> navController.navigateToSimpleTreeScreen()
-                                Example.VIEW_MODEL_TREE -> navController.navigateToViewModelTreeScreen()
+                                Example.SIMPLE -> navController.navigateToSimpleRootScreen()
+                                Example.VIEW_MODEL -> navController.navigateToViewModelTreeScreen()
                             }
                         })
                     }
-                    simpleTreeScreenComposable()
+                    simpleRootScreenComposable()
                     viewModelTreeScreenComposable()
                 }
             }
@@ -67,7 +67,7 @@ class MainActivity : FragmentActivity() {
     }
 
     enum class Example {
-        SIMPLE_TREE,
-        VIEW_MODEL_TREE,
+        SIMPLE,
+        VIEW_MODEL,
     }
 }

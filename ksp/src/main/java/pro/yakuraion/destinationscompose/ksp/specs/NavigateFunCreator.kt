@@ -9,20 +9,13 @@ import com.squareup.kotlinpoet.asTypeName
 import pro.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclaration
 import pro.yakuraion.destinationscompose.kspcore.Import
 
-class NavigateFunCreator(private val type: Type) : FunCreator {
+class NavigateFunCreator : FunCreator {
 
     override fun getImports(): List<Import> {
         return emptyList()
     }
 
     override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec {
-        return when (type) {
-            Type.NAVIGATE_TO -> createNavigateToFunSpec(screen)
-            Type.GET_START_DESTINATION -> createGetStartDestinationFunSpec(screen)
-        }
-    }
-
-    private fun createNavigateToFunSpec(screen: ScreenDeclaration): FunSpec {
         val funName = "navigateTo${screen.name}"
 
         return FunSpec.builder(funName)
@@ -30,42 +23,23 @@ class NavigateFunCreator(private val type: Type) : FunCreator {
             .addNavigateParameters(screen)
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getNavOptionsBuilderReceiverParameterSpec())
-            .addPropertiesStatement(screen)
-            .addRouteWithQueryStatement(screen)
-            .addStatement("""
-                navigate(
-                    route = routeWithQuery,
-                    builder = builder,
-                )
-            """.trimIndent())
-            .build()
-    }
-
-    private fun createGetStartDestinationFunSpec(screen: ScreenDeclaration): FunSpec {
-        val funName = "get${screen.name}StartDestination"
-
-        return FunSpec.builder(funName)
-            .returns(String::class)
-            .addNavigateParameters(screen)
-            .addParameter(getRouteParameterSpec(screen))
-            .addPropertiesStatement(screen)
-            .addRouteWithQueryStatement(screen)
-            .addStatement("""
-                return routeWithQuery
-            """.trimIndent())
+            .addNavArgValsStatement(screen)
+            .addFinalRouteStatement(screen)
+            .addNavigateCallStatement()
             .build()
     }
 
     private fun FunSpec.Builder.addNavigateParameters(screen: ScreenDeclaration): FunSpec.Builder {
-        return screen.parameters.fold(this) { builder, parameter ->
-            with(parameter) {
-                builder.addNavigateParameters()
-            }
+        return screen.navArgParameters.flatMap { it.getNavigateParameters() }.fold(this) { builder, param ->
+            val paramSpec = ParameterSpec.builder(param.name, param.type)
+                .run { param.defaultValueLiteral?.let { defaultValue(it) } ?: this }
+                .build()
+            builder.addParameter(paramSpec)
         }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
-        return ParameterSpec.builder("route", String::class)
+        return ParameterSpec.builder(ROUTE_PARAMETER_NAME, String::class)
             .defaultValue("%S", screen.decapitalizedName)
             .build()
     }
@@ -77,26 +51,45 @@ class NavigateFunCreator(private val type: Type) : FunCreator {
             .build()
     }
 
-    private fun FunSpec.Builder.addPropertiesStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        return screen.parameters.fold(this) { builder, parameter ->
-            builder.addStatement(parameter.getNavigateCreateRouteArgumentPropertiesCode())
+    private fun FunSpec.Builder.addNavArgValsStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        return screen.navArgParameters.fold(this) { builder, parameter ->
+            with(parameter) {
+                builder.createNavArgsValsFromNavigateParameters()
+            }
         }
     }
 
-    private fun FunSpec.Builder.addRouteWithQueryStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val routeArguments = screen.parameters.flatMap { it.getNavigateRouteArguments() }
+    private fun FunSpec.Builder.addFinalRouteStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        val composableNavArgs = screen.navArgParameters.flatMap { it.getComposableNavArgs() }
+        return this
+            .addStatement("val __navArgsNamesToValues = listOf<Pair<String, String?>>(")
+            .run {
+                composableNavArgs.fold(this) { builder, navArg ->
+                    builder.addStatement("    \"${navArg.name}\" to ${navArg.valInsideNavigateFunName},")
+                }
+            }
+            .addStatement(")")
+            .addStatement("val __notEmptyNavArgsNamesToValues = __navArgsNamesToValues.filter { it.second != null }")
+            .addStatement("val __routeArgumentsString = __notEmptyNavArgsNamesToValues.joinToString(separator = \"&\") { \"\${it.first}=\${it.second}\" }")
+            .addStatement("val $FINAL_ROUTE_VAL_NAME = if (__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+    }
+
+    private fun FunSpec.Builder.addNavigateCallStatement(): FunSpec.Builder {
         return addStatement(
             """
-                val queryArgs = listOf<Pair<String, String?>>(%L).filter { it.second != null }.joinToString(separator = "&") { it.first + "=" + it.second } 
-                val routeWithQuery = if (queryArgs.isEmpty()) route else route + "?" + queryArgs
+                navigate(
+                    route = %L,
+                    builder = builder,
+                )
             """.trimIndent(),
-            routeArguments.joinToString(separator = ", ") { "\"${it.name}\" to ${it.propertyName}" },
+            FINAL_ROUTE_VAL_NAME
         )
     }
 
-    enum class Type { NAVIGATE_TO, GET_START_DESTINATION }
-
     companion object {
+
+        private const val ROUTE_PARAMETER_NAME = "route"
+        private const val FINAL_ROUTE_VAL_NAME = "__finalRoute"
 
         private val navControllerClass = ClassName("androidx.navigation", "NavController")
         private val navOptionsBuilderClass = ClassName("androidx.navigation", "NavOptionsBuilder")

@@ -8,6 +8,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import pro.yakuraion.destinationscompose.core.DestinationScreen
 import pro.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclarationFactory
 import pro.yakuraion.destinationscompose.ksp.specs.ComposableFunCreator
+import pro.yakuraion.destinationscompose.ksp.specs.GetStartDestinationFunCreator
 import pro.yakuraion.destinationscompose.ksp.specs.NavigateFunCreator
 import pro.yakuraion.destinationscompose.kspcore.parameters.ParameterConverter
 import pro.yakuraion.destinationscompose.kspcore.parameters.lambda.LambdaParameterConverter
@@ -37,8 +38,8 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         codeGenerator = environment.codeGenerator,
         funCreators = listOf(
             ComposableFunCreator(),
-            NavigateFunCreator(NavigateFunCreator.Type.NAVIGATE_TO),
-            NavigateFunCreator(NavigateFunCreator.Type.GET_START_DESTINATION),
+            NavigateFunCreator(),
+            GetStartDestinationFunCreator(),
         )
     )
 
@@ -57,6 +58,7 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
     }
 
     companion object {
+
         private const val VIEW_MODEL_KOIN_CONVERTER_CLASS =
             "pro.yakuraion.destinationscompose.kspviewmodelkoin.parameters.ViewModelParameterConverter"
     }

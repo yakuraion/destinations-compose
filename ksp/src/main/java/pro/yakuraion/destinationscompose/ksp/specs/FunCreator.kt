@@ -8,5 +8,5 @@ interface FunCreator {
 
     fun getImports(): List<Import> = emptyList()
 
-    fun createKpFunSpec(screen: ScreenDeclaration): FunSpec
+    fun createKpFunSpec(screen: ScreenDeclaration): FunSpec?
 }

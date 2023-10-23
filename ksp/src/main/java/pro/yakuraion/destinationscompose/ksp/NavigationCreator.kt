@@ -22,14 +22,17 @@ class NavigationCreator(
         screen: ScreenDeclaration,
     ): FileSpec {
         val fileName = "${screen.name}Navigation"
-        val imports = funCreators.flatMap { it.getImports() } + screen.parameters.flatMap { it.getImports() }
+
+        val funCreatorImports = funCreators.flatMap { it.getImports() }
+        val parametersImports = screen.parameters.flatMap { it.getImports() }
+        val imports = (funCreatorImports + parametersImports).distinct()
+
         return FileSpec.builder(screen.packageName, fileName)
             .indent("    ")
+            .addImports(imports)
             .run {
                 funCreators.fold(this) { builder, funSpecCreator ->
-                    builder
-                        .addImports(imports.distinct())
-                        .addFunction(funSpecCreator.createKpFunSpec(screen))
+                    funSpecCreator.createKpFunSpec(screen)?.let { builder.addFunction(it) } ?: builder
                 }
             }
             .build()

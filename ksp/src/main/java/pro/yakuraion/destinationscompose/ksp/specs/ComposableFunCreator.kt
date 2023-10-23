@@ -6,15 +6,15 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import pro.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclaration
-import pro.yakuraion.destinationscompose.kspcore.BACK_STACK_ENTRY_NAME
 import pro.yakuraion.destinationscompose.kspcore.Import
 
 class ComposableFunCreator : FunCreator {
 
     override fun getImports(): List<Import> {
         return listOf(
-            Import("androidx.navigation", "navArgument"),
+            Import("androidx.navigation", "NamedNavArgument"),
             Import("androidx.navigation", "NavType"),
+            Import("androidx.navigation", "navArgument"),
         )
     }
 
@@ -23,28 +23,30 @@ class ComposableFunCreator : FunCreator {
 
         return FunSpec.builder(funName)
             .receiver(navGraphBuilderClass)
-            .addComposableParameters(screen)
+            .addDirectParameters(screen)
             .addParameter(getRouteParameterSpec(screen))
             .addParameter(getTransitionParameterSpec("enterTransition", enterTransitionClass, "null"))
             .addParameter(getTransitionParameterSpec("exitTransition", exitTransitionClass, "null"))
             .addParameter(getTransitionParameterSpec("popEnterTransition", enterTransitionClass, "enterTransition"))
             .addParameter(getTransitionParameterSpec("popExitTransition", exitTransitionClass, "exitTransition"))
-            .addComposableCallStatement(screen) {
+            .addFinalRouteStatement(screen)
+            .addStatement("")
+            .addComposableArgumentsStatement(screen)
+            .addStatement("")
+            .addComposableCallStatement {
                 addScreenCallStatement(screen)
             }
             .build()
     }
 
-    private fun FunSpec.Builder.addComposableParameters(screen: ScreenDeclaration): FunSpec.Builder {
-        return screen.parameters.fold(this) { builder, parameter ->
-            with(parameter) {
-                builder.addComposableParameters()
-            }
+    private fun FunSpec.Builder.addDirectParameters(screen: ScreenDeclaration): FunSpec.Builder {
+        return screen.directParameters.fold(this) { builder, parameter ->
+            builder.addParameter(parameter.name, parameter.kpTypeName)
         }
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
-        return ParameterSpec.builder("route", String::class)
+        return ParameterSpec.builder(ROUTE_PARAMETER_NAME, String::class)
             .defaultValue("%S", screen.decapitalizedName)
             .build()
     }
@@ -66,79 +68,75 @@ class ComposableFunCreator : FunCreator {
             .build()
     }
 
+    private fun FunSpec.Builder.addFinalRouteStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        val navArguments = screen.navArgParameters.map { it.getComposableNavArgs() }.flatten()
+        val navArgumentsNamesParamsLiteral = navArguments.joinToString(separator = ", ") { "\"${it.name}\"" }
+        val navArgumentInQueryFormatLiteral = "\"\${it}={\${it}}\""
+        return this
+            .addStatement("val __routeArgumentsString = listOf<String>(")
+            .addStatement("    $navArgumentsNamesParamsLiteral")
+            .addStatement(").joinToString(separator = \"&\") { $navArgumentInQueryFormatLiteral }")
+            .addStatement("val $FINAL_ROUTE_VAL_NAME = if (__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+    }
+
+    private fun FunSpec.Builder.addComposableArgumentsStatement(screen: ScreenDeclaration): FunSpec.Builder {
+        val navArguments = screen.navArgParameters.map { it.getComposableNavArgs() }.flatten()
+        return this
+            .addStatement("val $COMPOSABLE_ARGUMENTS_VAL_NAME = listOf<NamedNavArgument>(")
+            .run {
+                navArguments.fold(this) { builder, navArgument ->
+                    builder.addStatement("    navArgument(\"${navArgument.name}\") " +
+                        "{ type = NavType.StringType; nullable = true; defaultValue = ${ navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
+                }
+            }
+            .addStatement(")")
+    }
+
     private fun FunSpec.Builder.addComposableCallStatement(
-        screen: ScreenDeclaration,
         insideCode: FunSpec.Builder.() -> FunSpec.Builder,
     ): FunSpec.Builder {
         return this
-            .addStatement(
-                """
-                %M(
-                    route = route + %S,
-                    arguments = listOf(
-                        %L
-                    ),
-                    enterTransition = enterTransition,
-                    exitTransition = exitTransition,
-                    popEnterTransition = popEnterTransition,
-                    popExitTransition = popExitTransition,
-                ) { $BACK_STACK_ENTRY_NAME ->
-            """.trimIndent(),
-                composableMember,
-                getQueryArgumentsString(screen),
-                getNavigationArgumentsString(screen),
-            )
+            .addStatement("%M(", composableMember)
+            .addStatement("    route = $FINAL_ROUTE_VAL_NAME,")
+            .addStatement("    arguments = $COMPOSABLE_ARGUMENTS_VAL_NAME,")
+            .addStatement("    enterTransition = enterTransition,")
+            .addStatement("    exitTransition = exitTransition,")
+            .addStatement("    popEnterTransition = popEnterTransition,")
+            .addStatement("    popExitTransition = popExitTransition,")
+            .beginControlFlow(")")
+            .addStatement("$BACK_STACK_NAME ->")
             .insideCode()
-            .addStatement("}")
-    }
-
-    /**
-     * Example:
-     * "?arg1={arg1}&arg2={arg2}
-     */
-    private fun getQueryArgumentsString(screen: ScreenDeclaration): String {
-        var result = ""
-        val routeQueryArgs = screen.parameters.map { it.getComposableRouteArguments() }.flatten()
-        if (routeQueryArgs.isNotEmpty()) {
-            result = "?" + routeQueryArgs.joinToString(separator = "&") { "${it.name}={${it.name}}" }
-        }
-        return result
-    }
-
-    /**
-     * Example:
-     * navArgument("arg1"} { type = NavType.String; nullable = true },
-     * navArgument("arg2"} { type = NavType.String; nullable = true },
-     */
-    private fun getNavigationArgumentsString(screen: ScreenDeclaration): String {
-        return screen.parameters.flatMap { it.getComposableRouteArguments() }
-            .joinToString(separator = ",\n") { routeArgument ->
-                "navArgument(\"${routeArgument.name}\") { type = NavType.StringType; nullable = true }"
-            }
+            .endControlFlow()
     }
 
     private fun FunSpec.Builder.addScreenCallStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val builder = screen.parameters.fold(this) { builder, parameter ->
-            builder.addStatement(parameter.getComposableCreateScreenParameterPropertiesCode())
+        val builder = screen.navArgParameters.fold(this) { builder, parameter ->
+            with(parameter) {
+                builder.createParameterValFromBackStack(BACK_STACK_NAME)
+            }
         }
 
-        val screenMember = MemberName(screen.packageName, screen.name)
+        val directScreenParamsToVals = screen.directParameters.map { it.name to it.name }
+        val navArgScreenParamsToVals = screen.navArgParameters.map { it.name to it.parameterValFromBackStackName }
+        val paramsAssignments = (directScreenParamsToVals + navArgScreenParamsToVals)
 
-        val argsParametersString = screen.parameters
-            .joinToString(separator = ",\n") { "${it.name} = ${it.name}" }
-
-        return builder.addStatement(
-            """
-            %M(
-            %L
-            )
-        """.trimIndent(),
-            screenMember,
-            argsParametersString
-        )
+        return builder
+            .addStatement("")
+            .addStatement("%M(", MemberName(screen.packageName, screen.name))
+            .run {
+                paramsAssignments.fold(this) { builder, paramsAssignment ->
+                    builder.addStatement("    ${paramsAssignment.first} = ${paramsAssignment.second},")
+                }
+            }
+            .addStatement(")")
     }
 
     companion object {
+
+        private const val ROUTE_PARAMETER_NAME = "route"
+        private const val FINAL_ROUTE_VAL_NAME = "__finalRoute"
+        private const val COMPOSABLE_ARGUMENTS_VAL_NAME = "__composableArguments"
+        private const val BACK_STACK_NAME = "backStackEntry"
 
         private val function1Class = ClassName("kotlin", "Function1")
 

@@ -8,80 +8,72 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.FunSpec
 import pro.yakuraion.destinationscompose.core.NotDestinationParameter
 import pro.yakuraion.destinationscompose.kspcore.Import
-import pro.yakuraion.destinationscompose.kspcore.parameters.Parameter
+import pro.yakuraion.destinationscompose.kspcore.parameters.NavArgParameter
 import pro.yakuraion.destinationscompose.kspcore.parameters.parcelable.ParcelableParameterConverter
 import pro.yakuraion.destinationscompose.kspcore.parameters.primitive.PrimitiveParameterConverter
 import pro.yakuraion.destinationscompose.kspcore.parameters.serializable.SerializableParameterConverter
 
 @OptIn(KspExperimental::class)
-class ViewModelParameter(ksParameter: KSValueParameter) : Parameter(ksParameter) {
+class ViewModelParameter(ksParameter: KSValueParameter) : NavArgParameter(ksParameter) {
 
-    private val ksClassDeclaration: KSClassDeclaration = getViewModelKsClassDeclaration(ksParameter)
-        ?: error("ksParameter is not ViewModel")
+    private val ksClassDeclaration: KSClassDeclaration = getViewModelKsClassDeclaration(ksParameter) ?: error("ksParameter is not ViewModel")
 
     private val viewModelClassName: String = ksClassDeclaration.qualifiedName?.asString().orEmpty()
 
-    private val innerParameters: List<Parameter>
-
-    init {
-        val innerParametersConverters = listOf(
+    private val innerParametersExtractors = listOf(
             PrimitiveParameterConverter(),
             ParcelableParameterConverter(),
             SerializableParameterConverter(),
-        )
-        innerParameters = ksClassDeclaration
-            .primaryConstructor
-            ?.parameters
-            .orEmpty()
-            .filter { it.getAnnotationsByType(NotDestinationParameter::class).none() }
-            .mapNotNull { ksInnerParameter ->
-                innerParametersConverters.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
-            }
+    )
+
+    private val innerParameters: List<NavArgParameter> = extractInnerParameters()
+
+    private val composableNavArgs = innerParameters.flatMap { it.getComposableNavArgs() }
+
+    private val navigateParameters = innerParameters.flatMap { it.getNavigateParameters() }
+
+    private fun extractInnerParameters(): List<NavArgParameter> {
+        return ksClassDeclaration
+                .primaryConstructor
+                ?.parameters
+                .orEmpty()
+                .filter { it.getAnnotationsByType(NotDestinationParameter::class).none() }
+                .mapNotNull { ksInnerParameter ->
+                    innerParametersExtractors.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
+                }
     }
 
     override fun getImports(): List<Import> {
         val innerParametersImports = innerParameters.flatMap { it.getImports() }
         val viewModelParameterImports = listOf(
-            Import("org.koin.androidx.compose", "koinViewModel"),
-            Import("org.koin.core.parameter", "parametersOf"),
+                Import("org.koin.androidx.compose", "koinViewModel"),
+                Import("org.koin.core.parameter", "parametersOf"),
         )
-        return innerParametersImports + viewModelParameterImports
+        return (innerParametersImports + viewModelParameterImports).distinct()
     }
 
-    override fun FunSpec.Builder.addComposableParameters(): FunSpec.Builder = this
+    override fun getComposableNavArgs(): List<ComposableNavArg> = composableNavArgs
 
-    override fun getComposableRouteArguments(): List<ComposableRouteArgument> {
-        return innerParameters.flatMap { it.getComposableRouteArguments() }
-    }
-
-    override fun getComposableCreateScreenParameterPropertiesCode(): String {
-        val primitiveParametersCode = innerParameters.joinToString(separator = "\n") { primitiveParameter ->
-            primitiveParameter.getComposableCreateScreenParameterPropertiesCode()
-        }
-        return """
-            $primitiveParametersCode
-            val $name = koinViewModel<$viewModelClassName> {
-                parametersOf(
-                    ${innerParameters.joinToString(separator = ", ") { it.name }}
-                )
-            }
-        """.trimIndent()
-    }
-
-    override fun FunSpec.Builder.addNavigateParameters(): FunSpec.Builder {
-        return innerParameters.fold(this) { builder, primitiveParameter ->
-            with(primitiveParameter) {
-                builder.addNavigateParameters()
+    override fun FunSpec.Builder.createParameterValFromBackStack(backStackName: String): FunSpec.Builder {
+        val innerParametersVals = innerParameters.map { it.parameterValFromBackStackName }
+        return innerParameters.fold(this) { builder, innerParameter ->
+            with(innerParameter) {
+                builder.createParameterValFromBackStack(backStackName)
             }
         }
+                .beginControlFlow("val $parameterValFromBackStackName = koinViewModel<$viewModelClassName>")
+                .addStatement("parametersOf(${innerParametersVals.joinToString(separator = ", ")})")
+                .endControlFlow()
     }
 
-    override fun getNavigateRouteArguments(): List<NavigateRouteArgument> {
-        return innerParameters.flatMap { it.getNavigateRouteArguments() }
-    }
+    override fun getNavigateParameters(): List<NavigateParameter> = navigateParameters
 
-    override fun getNavigateCreateRouteArgumentPropertiesCode(): String {
-        return innerParameters.joinToString(separator = "\n") { it.getNavigateCreateRouteArgumentPropertiesCode() }
+    override fun FunSpec.Builder.createNavArgsValsFromNavigateParameters(): FunSpec.Builder {
+        return innerParameters.fold(this) { builder, innerParameter ->
+            with(innerParameter) {
+                builder.createNavArgsValsFromNavigateParameters()
+            }
+        }
     }
 
     companion object {

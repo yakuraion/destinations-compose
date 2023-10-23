@@ -2,7 +2,7 @@ package pro.yakuraion.destinationscompose
 
 import android.app.Application
 import org.koin.core.context.startKoin
-import pro.yakuraion.destinationscompose.viewmodeltree.viewModelModule
+import pro.yakuraion.destinationscompose.viewmodeltree.di.viewModelModule
 
 class SamplesApplication : Application() {
 
