@@ -48,18 +48,19 @@ dependencies {
     ksp(project(":ksp"))
     ksp(project(":ksp-viewmodel-koin"))
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
-    val composeBom = platform("androidx.compose:compose-bom:2023.01.00")
+    val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
 
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
 
-    implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation(libs.navigation.compose)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+    implementation(libs.viewmodel.compose)
+    
+    implementation(libs.koin.compose)
 }

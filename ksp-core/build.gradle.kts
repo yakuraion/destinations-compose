@@ -11,6 +11,6 @@ java {
 dependencies {
     api(project(":core"))
 
-    api("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
-    api("com.squareup:kotlinpoet-ksp:1.14.2")
+    api(libs.ksp)
+    api(libs.kotlinpoet.ksp)
 }
