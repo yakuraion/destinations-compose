@@ -1,25 +1,21 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            from(files("../../libs.versions.toml"))
+        }
+    }
 }
-
-rootProject.name = "DestinationsCompose"
-
-includeBuild("gradle/plugins/publishing")
-
-include(":core")
-include(":ksp")
-include(":ksp-core")
-include(":ksp-viewmodel-koin")
-
-include(":samples")
