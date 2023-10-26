@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "pro.yakuraion.destinationscompose"
+    namespace = "io.github.yakuraion.destinationscompose"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "pro.yakuraion.destinationscompose"
+        applicationId = "io.github.yakuraion.destinationscompose"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
