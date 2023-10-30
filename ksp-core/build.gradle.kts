@@ -12,7 +12,7 @@ java {
 }
 
 dependencies {
-    api(project(":core"))
+    api(libs.destinations.compose.core)
 
     api(libs.ksp)
     api(libs.kotlinpoet.ksp)

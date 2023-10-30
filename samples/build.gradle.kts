@@ -44,9 +44,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
-    ksp(project(":ksp"))
-    ksp(project(":ksp-viewmodel-koin"))
+    implementation(libs.destinations.compose.core)
+    ksp(libs.destinations.compose.ksp)
+    ksp(libs.destinations.compose.ksp.viewmodel.koin)
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)

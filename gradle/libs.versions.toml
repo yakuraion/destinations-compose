@@ -1,6 +1,7 @@
 [versions]
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
+destinations-compose = "0.1.0-SNAPSHOT"
 
 [libraries]
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
@@ -19,6 +20,11 @@ navigation-compose = { module = "androidx.navigation:navigation-compose", versio
 viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.2" }
 
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version = "3.5.0" }
+
+destinations-compose-core = { module = "io.github.yakuraion.destinationscompose:core", version.ref = "destinations-compose" }
+destinations-compose-ksp = { module = "io.github.yakuraion.destinationscompose:ksp", version.ref = "destinations-compose" }
+destinations-compose-ksp-core = { module = "io.github.yakuraion.destinationscompose:ksp-core", version.ref = "destinations-compose" }
+destinations-compose-ksp-viewmodel-koin = { module = "io.github.yakuraion.destinationscompose:ksp-viewmodel-koin", version.ref = "destinations-compose" }
 
 [plugins]
 android-application = { id = "com.android.application", version = "8.1.2" }

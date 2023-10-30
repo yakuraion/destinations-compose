@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./gradlew core:publishMavenJavaPublicationToMavenLocal
+./gradlew ksp-core:publishMavenJavaPublicationToMavenLocal
+./gradlew ksp-viewmodel-koin:publishMavenJavaPublicationToMavenLocal
+./gradlew ksp:publishMavenJavaPublicationToMavenLocal

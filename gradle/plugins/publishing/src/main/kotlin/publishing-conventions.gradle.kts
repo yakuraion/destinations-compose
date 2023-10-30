@@ -4,6 +4,11 @@ plugins {
     java
 }
 
+val versionCatalog = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+
+group = "io.github.yakuraion.destinationscompose"
+version = versionCatalog.findVersion("destinations-compose").get().requiredVersion
+
 java {
     withJavadocJar()
     withSourcesJar()

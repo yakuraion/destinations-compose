@@ -12,6 +12,5 @@ java {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":ksp-core"))
+    implementation(libs.destinations.compose.ksp.core)
 }

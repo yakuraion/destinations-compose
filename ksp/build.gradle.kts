@@ -12,8 +12,7 @@ java {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":ksp-core"))
+    implementation(libs.destinations.compose.ksp.core)
 
-    compileOnly(project(":ksp-viewmodel-koin"))
+    compileOnly(libs.destinations.compose.ksp.viewmodel.koin)
 }
