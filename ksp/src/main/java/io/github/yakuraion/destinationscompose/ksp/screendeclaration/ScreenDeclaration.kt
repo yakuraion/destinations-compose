@@ -14,6 +14,8 @@ class ScreenDeclaration(
 
     val decapitalizedName: String = name.replaceFirstChar { it.lowercaseChar() }
 
+    val defaultRouteName = decapitalizedName
+
     val directParameters: List<DirectParameter> = parameters.filterIsInstance(DirectParameter::class.java)
 
     val navArgParameters: List<NavArgParameter> = parameters.filterIsInstance(NavArgParameter::class.java)

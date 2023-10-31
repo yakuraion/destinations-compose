@@ -5,6 +5,30 @@ Destinations-compose is a library to generate [navigation-compose](https://devel
 
 ## Get started
 
+## Generated methods
+
+For every destination this library will generate the following functions:
+
+1. To apply composable to the navigation graph:
+```kotlin
+fun NavGraphBuilder.{screenName}Composable(...)
+```
+
+2. To navigate to the destination:
+```kotlin
+fun NavController.navigateTo{ScreenName}(...)
+```
+
+3. To get a string to use as `startDestination` parameter in NavHost (will be generated if all of the parameters have default values):
+```kotlin
+fun get{ScreenName}StartDestination(): String
+```
+
+4. Might be useful in methods like `navController.popBackStack(destinationId = ...)` if you decide to keep using predefined route:
+```kotlin
+fun get(ScreenName}DefaultRoute(): String
+```
+
 ## How to use
 
 1. Create your destination composable.

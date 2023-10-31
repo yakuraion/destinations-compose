@@ -47,7 +47,7 @@ class ComposableFunCreator : FunCreator {
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
         return ParameterSpec.builder(ROUTE_PARAMETER_NAME, String::class)
-            .defaultValue("%S", screen.decapitalizedName)
+            .defaultValue("%S", screen.defaultRouteName)
             .build()
     }
 

@@ -8,6 +8,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import io.github.yakuraion.destinationscompose.core.DestinationScreen
 import io.github.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclarationFactory
 import io.github.yakuraion.destinationscompose.ksp.specs.ComposableFunCreator
+import io.github.yakuraion.destinationscompose.ksp.specs.GetDefaultRouteFunCreator
 import io.github.yakuraion.destinationscompose.ksp.specs.GetStartDestinationFunCreator
 import io.github.yakuraion.destinationscompose.ksp.specs.NavigateFunCreator
 import io.github.yakuraion.destinationscompose.kspcore.parameters.ParameterConverter
@@ -40,6 +41,7 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             ComposableFunCreator(),
             NavigateFunCreator(),
             GetStartDestinationFunCreator(),
+            GetDefaultRouteFunCreator(),
         )
     )
 
