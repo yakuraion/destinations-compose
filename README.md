@@ -3,7 +3,30 @@ What is destinations-compose?
 
 Destinations-compose is a library to generate [navigation-compose](https://developer.android.com/jetpack/compose/navigation) code using [KSP](https://kotlinlang.org/docs/ksp-overview.html). The main feature is supporting arguments in easy way.
 
+## Versions
+
+| Project            |                                                                                                         Version                                                                                                         |
+|--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| core               |               [![Maven Central](https://img.shields.io/maven-central/v/io.github.yakuraion.destinationscompose/core)](https://central.sonatype.com/artifact/io.github.yakuraion.destinationscompose/core)               |
+| ksp-core           |           [![Maven Central](https://img.shields.io/maven-central/v/io.github.yakuraion.destinationscompose/ksp-core)](https://central.sonatype.com/artifact/io.github.yakuraion.destinationscompose/ksp-core)           |
+| ksp                |                [![Maven Central](https://img.shields.io/maven-central/v/io.github.yakuraion.destinationscompose/ksp)](https://central.sonatype.com/artifact/io.github.yakuraion.destinationscompose/ksp)                |
+| ksp-viewmodel-koin | [![Maven Central](https://img.shields.io/maven-central/v/io.github.yakuraion.destinationscompose/ksp-viewmodel-koin)](https://central.sonatype.com/artifact/io.github.yakuraion.destinationscompose/ksp-viewmodel-koin) |
+
 ## Get started
+
+```kotlin
+plugins { 
+    id("com.google.devtools.ksp").version("1.9.0-1.0.13") // Or latest version of KSP
+}
+
+dependencies { 
+    implementation("io.github.yakuraion.destinationscompose:core:0.1.0-alpha")
+    ksp("io.github.yakuraion.destinationscompose:ksp:0.1.0-alpha")
+   
+    // Optional: add ViewModel (provided by Koin) support
+    ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.1.0-alpha")
+}
+```
 
 ## Generated methods
 
