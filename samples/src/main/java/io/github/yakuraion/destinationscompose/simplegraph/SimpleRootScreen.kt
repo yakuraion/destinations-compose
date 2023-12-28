@@ -30,26 +30,29 @@ fun SimpleRootScreen() {
         onChildClick = { child ->
             when (child.name) {
                 "SimpleScreen1" -> {
-                    navController.navigateToSimpleScreen1(
+                    val route = getSimpleScreen1Route(
                         arg1 = 1,
                         arg2 = 2f,
                         arg3 = "arg3String",
                         arg4 = "arg4String",
                     )
+                    navController.navigate(route)
                 }
 
                 "SimpleScreen2" -> {
-                    navController.navigateToSimpleScreen2(
+                    val route = getSimpleScreen2Route(
                         arg1 = 1,
                         arg2 = null,
                         arg3 = 3.toULong(),
                         arg4 = "4",
                         arg5 = '5',
                     )
+                    navController.navigate(route)
+
                 }
 
                 "SimpleScreen3" -> {
-                    navController.navigateToSimpleScreen3(
+                    val route = getSimpleScreen3Route(
                         arg1 = SerializableParameter(1, "2"),
                         arg2 = SerializableParameter(1, "2"),
                         arg3 = null,
@@ -57,17 +60,21 @@ fun SimpleRootScreen() {
                         arg5 = ParcelableParameter(1, "2"),
                         arg6 = null,
                     )
+                    navController.navigate(route)
+
                 }
 
                 "SimpleScreen4" -> {
-                    navController.navigateToSimpleScreen4()
+                    val route = getSimpleScreen4Route()
+                    navController.navigate(route)
+
                 }
             }
         }
     ) {
         NavHost(
             navController = navController,
-            startDestination = getSimpleScreen1StartDestination(),
+            startDestination = getSimpleScreen1StartRoute(),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {

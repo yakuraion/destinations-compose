@@ -4,14 +4,14 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import io.github.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclaration
 
-class GetStartDestinationFunCreator : FunCreator {
+class GetStartRouteFunCreator : FunCreator {
 
     override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec? {
         if (!getIsAllNavArgsHaveDefaultValue(screen)) {
             return null
         }
 
-        val funName = "get${screen.name}StartDestination"
+        val funName = "get${screen.name}StartRoute"
 
         return FunSpec.builder(funName)
             .returns(String::class)
