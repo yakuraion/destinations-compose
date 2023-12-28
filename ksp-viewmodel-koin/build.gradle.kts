@@ -12,5 +12,9 @@ java {
 }
 
 dependencies {
-    implementation(libs.destinations.compose.ksp.core)
+    if (project.findProperty("useLocal") == "true") {
+        implementation(project(":ksp-core"))
+    } else {
+        implementation(libs.destinations.compose.ksp.core)
+    }
 }

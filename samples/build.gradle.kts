@@ -44,9 +44,17 @@ android {
 }
 
 dependencies {
-    implementation(libs.destinations.compose.core)
-    ksp(libs.destinations.compose.ksp)
-    ksp(libs.destinations.compose.ksp.viewmodel.koin)
+    if (project.findProperty("useLocal") == "true") {
+        println("useLocal")
+        implementation(project(":core"))
+        ksp(project(":ksp"))
+        ksp(project(":ksp-viewmodel-koin"))
+    } else {
+        println("useRemote")
+        implementation(libs.destinations.compose.core)
+        ksp(libs.destinations.compose.ksp)
+        ksp(libs.destinations.compose.ksp.viewmodel.koin)
+    }
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
@@ -61,6 +69,6 @@ dependencies {
     implementation(libs.navigation.compose)
 
     implementation(libs.viewmodel.compose)
-    
+
     implementation(libs.koin.compose)
 }

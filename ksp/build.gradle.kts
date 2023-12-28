@@ -12,7 +12,11 @@ java {
 }
 
 dependencies {
-    implementation(libs.destinations.compose.ksp.core)
-
-    compileOnly(libs.destinations.compose.ksp.viewmodel.koin)
+    if (project.findProperty("useLocal") == "true") {
+        implementation(project(":ksp-core"))
+        compileOnly(project(":ksp-viewmodel-koin"))
+    } else {
+        implementation(libs.destinations.compose.ksp.core)
+        compileOnly(libs.destinations.compose.ksp.viewmodel.koin)
+    }
 }

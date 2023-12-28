@@ -12,7 +12,11 @@ java {
 }
 
 dependencies {
-    api(libs.destinations.compose.core)
+    if (project.findProperty("useLocal") == "true") {
+        api(project(":core"))
+    } else {
+        api(libs.destinations.compose.core)
+    }
 
     api(libs.ksp)
     api(libs.kotlinpoet.ksp)
