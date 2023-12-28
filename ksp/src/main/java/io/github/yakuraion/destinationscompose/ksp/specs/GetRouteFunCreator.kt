@@ -49,16 +49,16 @@ class GetRouteFunCreator : FunCreator {
     private fun FunSpec.Builder.addFinalRouteStatement(screen: ScreenDeclaration): FunSpec.Builder {
         val composableNavArgs = screen.navArgParameters.flatMap { it.getComposableNavArgs() }
         return this
-            .addStatement("val __navArgsNamesToValues = listOf<Pair<String, String?>>(")
+            .addStatement("val·__navArgsNamesToValues·= listOf<Pair<String,·String?>>(")
             .run {
                 composableNavArgs.fold(this) { builder, navArg ->
-                    builder.addStatement("    \"${navArg.name}\" to ${navArg.valInsideNavigateFunName},")
+                    builder.addStatement("    \"${navArg.name}\"·to ${navArg.valInsideNavigateFunName},")
                 }
             }
             .addStatement(")")
-            .addStatement("val __notEmptyNavArgsNamesToValues = __navArgsNamesToValues.filter { it.second != null }")
-            .addStatement("val __routeArgumentsString = __notEmptyNavArgsNamesToValues.joinToString(separator = \"&\") { \"\${it.first}=\${it.second}\" }")
-            .addStatement("return if (__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+            .addStatement("val·__notEmptyNavArgsNamesToValues·= __navArgsNamesToValues.filter·{ it.second·!= null }")
+            .addStatement("val·__routeArgumentsString·= __notEmptyNavArgsNamesToValues.joinToString(separator·= \"&\")·{ \"\${it.first}=\${it.second}\" }")
+            .addStatement("return·if·(__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
     }
 
     companion object {

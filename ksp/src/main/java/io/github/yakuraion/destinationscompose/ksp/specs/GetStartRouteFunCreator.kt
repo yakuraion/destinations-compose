@@ -38,14 +38,14 @@ class GetStartRouteFunCreator : FunCreator {
     private fun FunSpec.Builder.addFinalRouteStatement(screen: ScreenDeclaration): FunSpec.Builder {
         val composableNavArgs = screen.navArgParameters.flatMap { it.getComposableNavArgs() }
         return this
-            .addStatement("val __routeArgumentsString = listOf<String>(")
+            .addStatement("val·__routeArgumentsString·= listOf<String>(")
             .run {
                 composableNavArgs.fold(this) { builder, composableNavArg ->
                     builder.addStatement("    \"${composableNavArg.name}={${composableNavArg.name}}\",")
                 }
             }
             .addStatement(")")
-            .addStatement("val $FINAL_ROUTE_VAL_NAME = if (__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+            .addStatement("val·$FINAL_ROUTE_VAL_NAME·= if·(__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
     }
 
     companion object {

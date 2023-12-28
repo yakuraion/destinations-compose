@@ -73,20 +73,20 @@ class ComposableFunCreator : FunCreator {
         val navArgumentsNamesParamsLiteral = navArguments.joinToString(separator = ", ") { "\"${it.name}\"" }
         val navArgumentInQueryFormatLiteral = "\"\${it}={\${it}}\""
         return this
-            .addStatement("val __routeArgumentsString = listOf<String>(")
+            .addStatement("val·__routeArgumentsString·= listOf<String>(")
             .addStatement("    $navArgumentsNamesParamsLiteral")
-            .addStatement(").joinToString(separator = \"&\") { $navArgumentInQueryFormatLiteral }")
-            .addStatement("val $FINAL_ROUTE_VAL_NAME = if (__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+            .addStatement(").joinToString(separator·= \"&\")·{ $navArgumentInQueryFormatLiteral }")
+            .addStatement("val·$FINAL_ROUTE_VAL_NAME·= if·(__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
     }
 
     private fun FunSpec.Builder.addComposableArgumentsStatement(screen: ScreenDeclaration): FunSpec.Builder {
         val navArguments = screen.navArgParameters.map { it.getComposableNavArgs() }.flatten()
         return this
-            .addStatement("val $COMPOSABLE_ARGUMENTS_VAL_NAME = listOf<NamedNavArgument>(")
+            .addStatement("val·$COMPOSABLE_ARGUMENTS_VAL_NAME·= listOf<NamedNavArgument>(")
             .run {
                 navArguments.fold(this) { builder, navArgument ->
-                    builder.addStatement("    navArgument(\"${navArgument.name}\") " +
-                        "{ type = NavType.StringType; nullable = true; defaultValue = ${ navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
+                    builder.addStatement("    navArgument(\"${navArgument.name}\")·" +
+                        "{ type·= NavType.StringType; nullable·= true; defaultValue·= ${ navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
                 }
             }
             .addStatement(")")
@@ -97,12 +97,12 @@ class ComposableFunCreator : FunCreator {
     ): FunSpec.Builder {
         return this
             .addStatement("%M(", composableMember)
-            .addStatement("    route = $FINAL_ROUTE_VAL_NAME,")
-            .addStatement("    arguments = $COMPOSABLE_ARGUMENTS_VAL_NAME,")
-            .addStatement("    enterTransition = enterTransition,")
-            .addStatement("    exitTransition = exitTransition,")
-            .addStatement("    popEnterTransition = popEnterTransition,")
-            .addStatement("    popExitTransition = popExitTransition,")
+            .addStatement("    route·= $FINAL_ROUTE_VAL_NAME,")
+            .addStatement("    arguments·= $COMPOSABLE_ARGUMENTS_VAL_NAME,")
+            .addStatement("    enterTransition·= enterTransition,")
+            .addStatement("    exitTransition·= exitTransition,")
+            .addStatement("    popEnterTransition·= popEnterTransition,")
+            .addStatement("    popExitTransition·= popExitTransition,")
             .beginControlFlow(")")
             .addStatement("$BACK_STACK_NAME ->")
             .insideCode()
