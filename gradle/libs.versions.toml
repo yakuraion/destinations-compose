@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
-destinations-compose = "0.1.0-alpha"
+destinations-compose = "0.2.0"
 
 [libraries]
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

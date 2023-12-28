@@ -20,11 +20,11 @@ plugins {
 }
 
 dependencies { 
-    implementation("io.github.yakuraion.destinationscompose:core:0.1.0-alpha")
-    ksp("io.github.yakuraion.destinationscompose:ksp:0.1.0-alpha")
+    implementation("io.github.yakuraion.destinationscompose:core:0.2.0")
+    ksp("io.github.yakuraion.destinationscompose:ksp:0.2.0")
    
     // Optional: add ViewModel (provided by Koin) support
-    ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.1.0-alpha")
+    ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.2.0")
 }
 ```
 
@@ -37,19 +37,14 @@ For every destination this library will generate the following functions:
 fun NavGraphBuilder.{screenName}Composable(...)
 ```
 
-2. To navigate to the destination:
+2. To get a string to use as `route` parameter in `NavController.navigate(...)`:
 ```kotlin
-fun NavController.navigateTo{ScreenName}(...)
+fun get{ScreenName}Route(): String
 ```
 
 3. To get a string to use as `startDestination` parameter in NavHost (will be generated if all of the parameters have default values):
 ```kotlin
-fun get{ScreenName}StartDestination(): String
-```
-
-4. Might be useful in methods like `navController.popBackStack(destinationId = ...)` if you decide to keep using predefined route:
-```kotlin
-fun get(ScreenName}DefaultRoute(): String
+fun get{ScreenName}StartRoute(): String
 ```
 
 ## How to use
@@ -85,14 +80,14 @@ fun get(ScreenName}DefaultRoute(): String
    ```
    and
    ```kotlin
-   fun NavController.navigateToChildScreen(
+   fun getChildScreenRoute(
        arg1: Int,
        arg2: String?,
-   )
+   ): String
    ```
    If all arguments are callable (lambdas) or all of them have default values (see "Setting default values to arguments") it will also generate function:
    ```kotlin
-   fun getChildScreenStartDestination(): String
+   fun getChildScreenStartRoute(): String
    ```
 4. Add the screen to a navigation graph
 
@@ -102,7 +97,7 @@ fun get(ScreenName}DefaultRoute(): String
        val navController = rememberNavController()
        NavHost(
            navController = navController,
-           startDestination = getChildScreenStartDestination(),  // use generated get{ScreenName}StartDestination function
+           startDestination = getChildScreenStartRoute(),  // use generated get{ScreenName}StartRoute function
        ) {
            childScreenComposable(  // use generated {screenName}Composable function
                onBackRequest = {}
@@ -110,10 +105,11 @@ fun get(ScreenName}DefaultRoute(): String
        }
 
        LaunchedEffect(Unit) {
-           navController.navigateToChildScreen(  // use generated navigateTo{screenName} function
+           val route = getChildScreenRoute(  // use generated get{ScreenName}Route function
                arg1 = 1,
                arg2 = "2",
            )
+           navController.navigateTo(route)
        }
    }
    ```
@@ -177,10 +173,10 @@ fun NavGraphBuilder.childScreenComposable(onBackRequest: () -> Unit)
 ```
 and
 ```kotlin
-fun NavController.navigateToChildScreen(
+fun getChildScreenRoute(
     arg1: Int,
     arg2: String?,
-)
+): String
 ```
 
 ### Restrict passing arguments via navigation in ViewModel
@@ -201,9 +197,9 @@ class ChildViewModel(
 will generate
 
 ```kotlin
-fun NavController.navigateToChildScreen(
+fun getChildScreenRoute(
     arg1: Int,
-)
+): String
 ```
 
 If you have other parameters in ViewModel (usecases, interactors, etc.) that are not Primitives, Parcelables or Serializables, 
