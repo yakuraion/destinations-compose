@@ -16,9 +16,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.github.yakuraion.destinationscompose.simplegraph.getSimpleRootScreenRoute
+import io.github.yakuraion.destinationscompose.simplegraph.navigateToSimpleRootScreen
 import io.github.yakuraion.destinationscompose.simplegraph.simpleRootScreenComposable
-import io.github.yakuraion.destinationscompose.viewmodeltree.getViewModelTreeScreenRoute
+import io.github.yakuraion.destinationscompose.viewmodeltree.navigateToViewModelTreeScreen
 import io.github.yakuraion.destinationscompose.viewmodeltree.viewModelTreeScreenComposable
 
 class MainActivity : FragmentActivity() {
@@ -37,11 +37,10 @@ class MainActivity : FragmentActivity() {
                 ) {
                     composable(route = "picker") {
                         Picker(onClick = { example ->
-                            val route = when (example) {
-                                Example.SIMPLE -> getSimpleRootScreenRoute()
-                                Example.VIEW_MODEL -> getViewModelTreeScreenRoute()
+                            when (example) {
+                                Example.SIMPLE -> navController.navigateToSimpleRootScreen()
+                                Example.VIEW_MODEL -> navController.navigateToViewModelTreeScreen()
                             }
-                            navController.navigate(route)
                         })
                     }
                     simpleRootScreenComposable()
