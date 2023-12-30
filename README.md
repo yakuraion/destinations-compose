@@ -15,16 +15,16 @@ Destinations-compose is a library to generate [navigation-compose](https://devel
 ## Get started
 
 ```kotlin
-plugins { 
-    id("com.google.devtools.ksp").version("1.9.0-1.0.13") // Or latest version of KSP
+plugins {
+   id("com.google.devtools.ksp").version("1.9.0-1.0.13") // Or latest version of KSP
 }
 
-dependencies { 
-    implementation("io.github.yakuraion.destinationscompose:core:0.2.0")
-    ksp("io.github.yakuraion.destinationscompose:ksp:0.2.0")
-   
-    // Optional: add ViewModel (provided by Koin) support
-    ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.2.0")
+dependencies {
+   implementation("io.github.yakuraion.destinationscompose:core:0.2.0")
+   ksp("io.github.yakuraion.destinationscompose:ksp:0.2.0")
+
+   // Optional: add ViewModel (provided by Koin) support
+   ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.2.0")
 }
 ```
 
@@ -37,14 +37,19 @@ For every destination this library will generate the following functions:
 fun NavGraphBuilder.{screenName}Composable(...)
 ```
 
-2. To get a string to use as `route` parameter in `NavController.navigate(...)`:
+2. To navigate to the destination:
 ```kotlin
-fun get{ScreenName}Route(): String
+fun NavController.navigateTo{ScreenName}(...)
 ```
 
-3. To get a string to use as `startDestination` parameter in NavHost (will be generated if all of the parameters have default values):
+3. To get a string to use as `startRoute` parameter in NavHost (will be generated if all of the parameters have default values):
 ```kotlin
 fun get{ScreenName}StartRoute(): String
+```
+
+4. Might be useful in methods like `navController.popBackStack(route = ...)` if you decide to keep using predefined route:
+```kotlin
+fun get(ScreenName}DefaultRoute(): String
 ```
 
 ## How to use
@@ -80,10 +85,10 @@ fun get{ScreenName}StartRoute(): String
    ```
    and
    ```kotlin
-   fun getChildScreenRoute(
+   fun NavController.navigateToChildScreen(
        arg1: Int,
        arg2: String?,
-   ): String
+   )
    ```
    If all arguments are callable (lambdas) or all of them have default values (see "Setting default values to arguments") it will also generate function:
    ```kotlin
@@ -97,7 +102,7 @@ fun get{ScreenName}StartRoute(): String
        val navController = rememberNavController()
        NavHost(
            navController = navController,
-           startDestination = getChildScreenStartRoute(),  // use generated get{ScreenName}StartRoute function
+           startRoute = getChildScreenStartRoute(),  // use generated get{ScreenName}StartRoute function
        ) {
            childScreenComposable(  // use generated {screenName}Composable function
                onBackRequest = {}
@@ -105,11 +110,10 @@ fun get{ScreenName}StartRoute(): String
        }
 
        LaunchedEffect(Unit) {
-           val route = getChildScreenRoute(  // use generated get{ScreenName}Route function
+           navController.navigateToChildScreen(  // use generated navigateTo{ScreenName} function
                arg1 = 1,
                arg2 = "2",
            )
-           navController.navigateTo(route)
        }
    }
    ```
@@ -173,16 +177,16 @@ fun NavGraphBuilder.childScreenComposable(onBackRequest: () -> Unit)
 ```
 and
 ```kotlin
-fun getChildScreenRoute(
+fun NavController.navigateToChildScreen(
     arg1: Int,
     arg2: String?,
-): String
+)
 ```
 
 ### Restrict passing arguments via navigation in ViewModel
 
-If you have ViewModel's parameter that is Primitive, Serializable or Parcelable and you don't want to pass it via navigation, 
-you can mark the parameter with the `@NotDestinationParameter` annotation. 
+If you have ViewModel's parameter that is Primitive, Serializable or Parcelable and you don't want to pass it via navigation,
+you can mark the parameter with the `@NotDestinationParameter` annotation.
 In this case you will have to pass it via DI.
 
 ```kotlin
@@ -197,10 +201,10 @@ class ChildViewModel(
 will generate
 
 ```kotlin
-fun getChildScreenRoute(
+fun NavController.navigateToChildScreen(
     arg1: Int,
-): String
+)
 ```
 
-If you have other parameters in ViewModel (usecases, interactors, etc.) that are not Primitives, Parcelables or Serializables, 
+If you have other parameters in ViewModel (usecases, interactors, etc.) that are not Primitives, Parcelables or Serializables,
 they will not be added to the navigation functions and should be provided by DI.
