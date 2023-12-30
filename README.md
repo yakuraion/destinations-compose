@@ -20,11 +20,11 @@ plugins {
 }
 
 dependencies {
-   implementation("io.github.yakuraion.destinationscompose:core:0.2.0")
-   ksp("io.github.yakuraion.destinationscompose:ksp:0.2.0")
+   implementation("io.github.yakuraion.destinationscompose:core:0.3.0")
+   ksp("io.github.yakuraion.destinationscompose:ksp:0.3.0")
 
    // Optional: add ViewModel (provided by Koin) support
-   ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.2.0")
+   ksp("io.github.yakuraion.destinationscompose:ksp-viewmodel-koin:0.3.0")
 }
 ```
 
