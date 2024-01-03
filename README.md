@@ -42,14 +42,10 @@ fun NavGraphBuilder.{screenName}Composable(...)
 fun NavController.navigateTo{ScreenName}(...)
 ```
 
-3. To get a string to use as `startRoute` parameter in NavHost (will be generated if all of the parameters have default values):
+3. To get a route with parameters. For example, `screen?first={first}&second={second}`. This route is useful in `popBackStack` and `popUpTo` methods. 
+Also can be used as `startDestination` parameter in `NavHost`:
 ```kotlin
-fun get{ScreenName}StartRoute(): String
-```
-
-4. Might be useful in methods like `navController.popBackStack(route = ...)` if you decide to keep using predefined route:
-```kotlin
-fun get(ScreenName}DefaultRoute(): String
+fun get{ScreenName}RouteScheme(): String
 ```
 
 ## How to use
@@ -83,16 +79,16 @@ fun get(ScreenName}DefaultRoute(): String
    ```kotlin
    fun NavGraphBuilder.childScreenComposable(onBackRequest: () -> Unit)
    ```
-   and
+   ,
    ```kotlin
    fun NavController.navigateToChildScreen(
        arg1: Int,
        arg2: String?,
    )
    ```
-   If all arguments are callable (lambdas) or all of them have default values (see "Setting default values to arguments") it will also generate function:
+   and
    ```kotlin
-   fun getChildScreenStartRoute(): String
+   fun getChildScreenRouteScheme(): String
    ```
 4. Add the screen to a navigation graph
 
@@ -102,7 +98,7 @@ fun get(ScreenName}DefaultRoute(): String
        val navController = rememberNavController()
        NavHost(
            navController = navController,
-           startRoute = getChildScreenStartRoute(),  // use generated get{ScreenName}StartRoute function
+           startRoute = getChildScreenRouteScheme(),  // use generated get{ScreenName}RouteScheme function
        ) {
            childScreenComposable(  // use generated {screenName}Composable function
                onBackRequest = {}
@@ -175,12 +171,16 @@ The library will generate the methods:
 ```kotlin
 fun NavGraphBuilder.childScreenComposable(onBackRequest: () -> Unit)
 ```
-and
+,
 ```kotlin
 fun NavController.navigateToChildScreen(
     arg1: Int,
     arg2: String?,
 )
+```
+and
+```kotlin
+fun getChildScreenRouteScheme(): String
 ```
 
 ### Restrict passing arguments via navigation in ViewModel
