@@ -70,7 +70,7 @@ fun SimpleRootScreen() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = getSimpleScreen1StartRoute(),
+            startDestination = getSimpleScreen1RouteScheme(),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {

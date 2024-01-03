@@ -69,14 +69,8 @@ class ComposableFunCreator : FunCreator {
     }
 
     private fun FunSpec.Builder.addFinalRouteStatement(screen: ScreenDeclaration): FunSpec.Builder {
-        val navArguments = screen.navArgParameters.map { it.getComposableNavArgs() }.flatten()
-        val navArgumentsNamesParamsLiteral = navArguments.joinToString(separator = ", ") { "\"${it.name}\"" }
-        val navArgumentInQueryFormatLiteral = "\"\${it}={\${it}}\""
         return this
-            .addStatement("val·__routeArgumentsString·= listOf<String>(")
-            .addStatement("    $navArgumentsNamesParamsLiteral")
-            .addStatement(").joinToString(separator·= \"&\")·{ $navArgumentInQueryFormatLiteral }")
-            .addStatement("val·$FINAL_ROUTE_VAL_NAME·= if·(__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
+            .addStatement("val·$FINAL_ROUTE_VAL_NAME·= get${screen.name}RouteScheme(route·= $ROUTE_PARAMETER_NAME)")
     }
 
     private fun FunSpec.Builder.addComposableArgumentsStatement(screen: ScreenDeclaration): FunSpec.Builder {
@@ -86,7 +80,7 @@ class ComposableFunCreator : FunCreator {
             .run {
                 navArguments.fold(this) { builder, navArgument ->
                     builder.addStatement("    navArgument(\"${navArgument.name}\")·" +
-                        "{ type·= NavType.StringType; nullable·= true; defaultValue·= ${ navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
+                        "{ type·= NavType.StringType; nullable·= true; defaultValue·= ${navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
                 }
             }
             .addStatement(")")

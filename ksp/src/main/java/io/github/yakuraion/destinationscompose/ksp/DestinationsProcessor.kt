@@ -8,9 +8,8 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import io.github.yakuraion.destinationscompose.core.DestinationScreen
 import io.github.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclarationFactory
 import io.github.yakuraion.destinationscompose.ksp.specs.ComposableFunCreator
-import io.github.yakuraion.destinationscompose.ksp.specs.GetDefaultRouteFunCreator
+import io.github.yakuraion.destinationscompose.ksp.specs.GetRouteSchemeFunCreator
 import io.github.yakuraion.destinationscompose.ksp.specs.NavigateFunCreator
-import io.github.yakuraion.destinationscompose.ksp.specs.GetStartRouteFunCreator
 import io.github.yakuraion.destinationscompose.kspcore.parameters.ParameterConverter
 import io.github.yakuraion.destinationscompose.kspcore.parameters.lambda.LambdaParameterConverter
 import io.github.yakuraion.destinationscompose.kspcore.parameters.parcelable.ParcelableParameterConverter
@@ -38,10 +37,9 @@ class DestinationsProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
     private val navigationCreator = NavigationCreator(
         codeGenerator = environment.codeGenerator,
         funCreators = listOf(
+            GetRouteSchemeFunCreator(),
             ComposableFunCreator(),
             NavigateFunCreator(),
-            GetStartRouteFunCreator(),
-            GetDefaultRouteFunCreator(),
         )
     )
 

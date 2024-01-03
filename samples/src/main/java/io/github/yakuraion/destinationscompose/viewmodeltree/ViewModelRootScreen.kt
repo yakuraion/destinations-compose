@@ -11,7 +11,7 @@ import io.github.yakuraion.destinationscompose.base.ScreenChildren
 import io.github.yakuraion.destinationscompose.core.DestinationScreen
 import io.github.yakuraion.destinationscompose.parameters.ParcelableParameter
 import io.github.yakuraion.destinationscompose.parameters.SerializableParameter
-import io.github.yakuraion.destinationscompose.viewmodeltree.screen1.getViewModelScreen1StartRoute
+import io.github.yakuraion.destinationscompose.viewmodeltree.screen1.getViewModelScreen1RouteScheme
 import io.github.yakuraion.destinationscompose.viewmodeltree.screen1.navigateToViewModelScreen1
 import io.github.yakuraion.destinationscompose.viewmodeltree.screen1.viewModelScreen1Composable
 import io.github.yakuraion.destinationscompose.viewmodeltree.screen2.navigateToViewModelScreen2
@@ -59,7 +59,7 @@ fun ViewModelTreeScreen() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = getViewModelScreen1StartRoute(),
+            startDestination = getViewModelScreen1RouteScheme(),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {

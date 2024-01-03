@@ -4,14 +4,10 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import io.github.yakuraion.destinationscompose.ksp.screendeclaration.ScreenDeclaration
 
-class GetStartRouteFunCreator : FunCreator {
+class GetRouteSchemeFunCreator : FunCreator {
 
     override fun createKpFunSpec(screen: ScreenDeclaration): FunSpec? {
-        if (!getIsAllNavArgsHaveDefaultValue(screen)) {
-            return null
-        }
-
-        val funName = "get${screen.name}StartRoute"
+        val funName = "get${screen.name}RouteScheme"
 
         return FunSpec.builder(funName)
             .returns(String::class)
@@ -19,14 +15,6 @@ class GetStartRouteFunCreator : FunCreator {
             .addFinalRouteStatement(screen)
             .addStatement("return $FINAL_ROUTE_VAL_NAME")
             .build()
-    }
-
-    private fun getIsAllNavArgsHaveDefaultValue(screen: ScreenDeclaration): Boolean {
-        val isNavArgWithoutDefaultValueExists = screen.navArgParameters
-            .flatMap { it.getComposableNavArgs() }
-            .any { it.defaultValue == null }
-
-        return !isNavArgWithoutDefaultValueExists
     }
 
     private fun getRouteParameterSpec(screen: ScreenDeclaration): ParameterSpec {
@@ -44,7 +32,7 @@ class GetStartRouteFunCreator : FunCreator {
                     builder.addStatement("    \"${composableNavArg.name}={${composableNavArg.name}}\",")
                 }
             }
-            .addStatement(")")
+            .addStatement(").joinToString(separator·= \"&\")")
             .addStatement("val·$FINAL_ROUTE_VAL_NAME·= if·(__routeArgumentsString.isEmpty()) $ROUTE_PARAMETER_NAME else \"\$$ROUTE_PARAMETER_NAME?\$__routeArgumentsString\"")
     }
 
