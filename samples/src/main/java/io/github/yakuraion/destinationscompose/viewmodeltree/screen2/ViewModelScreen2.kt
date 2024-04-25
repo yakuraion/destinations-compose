@@ -18,6 +18,7 @@ fun ViewModelScreen2(
             "arg2" to viewModel.arg2,
             "arg3" to viewModel.arg3,
             "arg4" to viewModel.arg4,
+            "url" to viewModel.url,
         )
     )
 }

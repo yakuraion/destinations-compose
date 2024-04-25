@@ -36,10 +36,10 @@ class SerializableParameter(ksParameter: KSValueParameter) : NavArgParameter(ksP
         val className = if (isNullable) "$rawClassName?" else rawClassName
         val valName = parameterValFromBackStackName
         return this
-            .addStatement("val ${valName}Encoded = $backStackName.arguments?.getString(\"${composableNavArg.name}\")")
-            .addStatement("val ${valName}Data = Base64.decode(${valName}Encoded, Base64.NO_WRAP)")
-            .addStatement("val ${valName}OIS = ObjectInputStream(ByteArrayInputStream(${valName}Data))")
-            .addStatement("val $valName = ${valName}OIS.readObject() as $className")
+            .addStatement("val·${valName}Encoded·= $backStackName.arguments?.getString(\"${composableNavArg.name}\")")
+            .addStatement("val·${valName}Data·= Base64.decode(${valName}Encoded, Base64.NO_WRAP)")
+            .addStatement("val·${valName}OIS·= ObjectInputStream(ByteArrayInputStream(${valName}Data))")
+            .addStatement("val·$valName·= ${valName}OIS.readObject() as·$className")
             .addStatement("${valName}OIS.close()")
             .addStatement("")
     }
@@ -49,11 +49,11 @@ class SerializableParameter(ksParameter: KSValueParameter) : NavArgParameter(ksP
     override fun FunSpec.Builder.createNavArgsValsFromNavigateParameters(): FunSpec.Builder {
         val valName = composableNavArg.valInsideNavigateFunName
         return this
-            .addStatement("val ${valName}BAOS = ByteArrayOutputStream()")
-            .addStatement("val ${valName}OOS = ObjectOutputStream(${valName}BAOS)")
+            .addStatement("val·${valName}BAOS·= ByteArrayOutputStream()")
+            .addStatement("val·${valName}OOS·= ObjectOutputStream(${valName}BAOS)")
             .addStatement("${valName}OOS.writeObject(${navigateParameter.name})")
             .addStatement("${valName}OOS.close()")
-            .addStatement("val $valName = Base64.encodeToString(${valName}BAOS.toByteArray(), Base64.NO_WRAP)")
+            .addStatement("val·$valName·= Base64.encodeToString(${valName}BAOS.toByteArray(), Base64.NO_WRAP)")
             .addStatement("")
     }
 

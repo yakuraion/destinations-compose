@@ -3,6 +3,7 @@ package io.github.yakuraion.destinationscompose.kspcore.parameters.primitive
 import com.google.devtools.ksp.symbol.KSClassifierReference
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.FunSpec
+import io.github.yakuraion.destinationscompose.kspcore.Import
 import io.github.yakuraion.destinationscompose.kspcore.parameters.NavArgParameter
 
 class PrimitiveParameter(
@@ -16,6 +17,12 @@ class PrimitiveParameter(
     private val composableNavArg = ComposableNavArg(name, getComposableNavArgDefaultValue())
 
     private val navigateParameter = NavigateParameter(name, kpTypeName, defaultValueLiteral)
+
+    override fun getImports(): List<Import> {
+        return listOf(
+            Import("android.util", "Base64"),
+        )
+    }
 
     override fun getComposableNavArgs(): List<ComposableNavArg> = listOf(composableNavArg)
 
@@ -31,14 +38,22 @@ class PrimitiveParameter(
 
     override fun FunSpec.Builder.createParameterValFromBackStack(backStackName: String): FunSpec.Builder {
         val fromStringMethod = if (isNullable) type.fromStringMethod else "${type.fromStringMethod}!!"
-        return addStatement("val $parameterValFromBackStackName = $backStackName.arguments?.getString(\"${composableNavArg.name}\")${fromStringMethod}")
+        val encodedValueString = "$backStackName.arguments?.getString(\"${composableNavArg.name}\")"
+        val decodedValueString = "$encodedValueString?.let·{ Base64.decode(it, Base64.NO_WRAP) }?.let { String(it) }"
+        val value = "$decodedValueString${fromStringMethod}"
+        return addStatement("val $parameterValFromBackStackName = $value")
     }
 
     override fun getNavigateParameters(): List<NavigateParameter> = listOf(navigateParameter)
 
     override fun FunSpec.Builder.createNavArgsValsFromNavigateParameters(): FunSpec.Builder {
         val toStringMethod = if (isNullable) "?.toString()" else ".toString()"
-        return addStatement("val ${composableNavArg.valInsideNavigateFunName} = ${navigateParameter.name}$toStringMethod")
+        val valueString = if (isNullable) {
+            "${navigateParameter.name}$toStringMethod?.let·{ Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP) }"
+        } else {
+            "Base64.encodeToString(${navigateParameter.name}$toStringMethod.toByteArray(), Base64.NO_WRAP)"
+        }
+        return addStatement("val·${composableNavArg.valInsideNavigateFunName}·= $valueString")
     }
 
     enum class Type(val referencedName: String, val fromStringMethod: String) {

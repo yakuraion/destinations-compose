@@ -9,4 +9,5 @@ class ViewModel2(
     val arg2: ParcelableParameter?,
     val arg3: SerializableParameter,
     val arg4: SerializableParameter?,
+    val url: String,
 ) : ViewModel()

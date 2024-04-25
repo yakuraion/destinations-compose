@@ -31,12 +31,12 @@ class ParcelableParameter(ksParameter: KSValueParameter) : NavArgParameter(ksPar
         val className = if (isNullable) "$rawClassName?" else rawClassName
         val valName = parameterValFromBackStackName
         return this
-            .addStatement("val ${valName}Parcel = Parcel.obtain()")
-            .addStatement("val ${valName}String = $backStackName.arguments?.getString(\"${composableNavArg.name}\")")
-            .addStatement("val ${valName}ByteArray = ${valName}String?.let { Base64.decode(it, Base64.NO_WRAP) } ?: ByteArray(0)")
+            .addStatement("val·${valName}Parcel·= Parcel.obtain()")
+            .addStatement("val·${valName}String·= $backStackName.arguments?.getString(\"${composableNavArg.name}\")")
+            .addStatement("val·${valName}ByteArray·= ${valName}String?.let·{ Base64.decode(it, Base64.NO_WRAP) } ?:·ByteArray(0)")
             .addStatement("${valName}Parcel.unmarshall(${valName}ByteArray, 0, ${valName}ByteArray.size)")
             .addStatement("${valName}Parcel.setDataPosition(0)")
-            .addStatement("val $valName = ${valName}Parcel.readValue(${ksClassDeclaration.qualifiedName?.asString()}::class.java.classLoader) as $className")
+            .addStatement("val·$valName·= ${valName}Parcel.readValue(${ksClassDeclaration.qualifiedName?.asString()}::class.java.classLoader) as·$className")
             .addStatement("${valName}Parcel.recycle()")
             .addStatement("")
     }
@@ -46,10 +46,10 @@ class ParcelableParameter(ksParameter: KSValueParameter) : NavArgParameter(ksPar
     override fun FunSpec.Builder.createNavArgsValsFromNavigateParameters(): FunSpec.Builder {
         val valName = composableNavArg.valInsideNavigateFunName
         return this
-            .addStatement("val ${valName}Parcel = Parcel.obtain()")
+            .addStatement("val·${valName}Parcel·= Parcel.obtain()")
             .addStatement("${valName}Parcel.writeValue(${navigateParameter.name})")
-            .addStatement("val ${valName}ByteArray = ${valName}Parcel.marshall()")
-            .addStatement("val $valName = Base64.encodeToString(${valName}ByteArray, Base64.NO_WRAP)")
+            .addStatement("val·${valName}ByteArray·= ${valName}Parcel.marshall()")
+            .addStatement("val·$valName·= Base64.encodeToString(${valName}ByteArray, Base64.NO_WRAP)")
             .addStatement("${valName}Parcel.recycle()")
             .addStatement("")
     }

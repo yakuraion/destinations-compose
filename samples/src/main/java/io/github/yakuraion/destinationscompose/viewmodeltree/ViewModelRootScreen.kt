@@ -48,6 +48,7 @@ fun ViewModelTreeScreen() {
                         arg2 = null,
                         arg3 = SerializableParameter(1, "2"),
                         arg4 = null,
+                        url = "https://example.com?arg1=\"hello\"&arg2=\"bye\""
                     )
                 }
 

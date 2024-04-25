@@ -79,8 +79,15 @@ class ComposableFunCreator : FunCreator {
             .addStatement("val·$COMPOSABLE_ARGUMENTS_VAL_NAME·= listOf<NamedNavArgument>(")
             .run {
                 navArguments.fold(this) { builder, navArgument ->
-                    builder.addStatement("    navArgument(\"${navArgument.name}\")·" +
-                        "{ type·= NavType.StringType; nullable·= true; defaultValue·= ${navArgument.defaultValue?.value?.let { "\"$it\"" } ?: "null"} },")
+                    val defaultValueEncoded = navArgument.defaultValue?.value
+                        ?.let {"Base64.encodeToString(\"$it\".toByteArray(), Base64.NO_WRAP)"
+                        } ?: "null"
+                    builder
+                        .addStatement("    navArgument(\"${navArgument.name}\")·{")
+                        .addStatement("        type·= NavType.StringType;")
+                        .addStatement("        nullable·= true;")
+                        .addStatement("        defaultValue·= $defaultValueEncoded")
+                        .addStatement("    },")
                 }
             }
             .addStatement(")")

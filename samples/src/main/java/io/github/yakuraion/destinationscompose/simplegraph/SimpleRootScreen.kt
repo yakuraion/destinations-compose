@@ -52,7 +52,7 @@ fun SimpleRootScreen() {
                 "SimpleScreen3" -> {
                     navController.navigateToSimpleScreen3(
                         arg1 = SerializableParameter(1, "2"),
-                        arg2 = SerializableParameter(1, "2"),
+                        arg2 = SerializableParameter(1, "https://example.com?arg1=1&arg2=\"2\"&arg3=false"),
                         arg3 = null,
                         arg4 = ParcelableParameter(1, "2"),
                         arg5 = ParcelableParameter(1, "2"),
@@ -62,8 +62,9 @@ fun SimpleRootScreen() {
                 }
 
                 "SimpleScreen4" -> {
-                    navController.navigateToSimpleScreen4()
-
+                    navController.navigateToSimpleScreen4(
+                        url = "https://example.com?arg1=1&arg2=\"2\"&arg3=false"
+                    )
                 }
             }
         }
