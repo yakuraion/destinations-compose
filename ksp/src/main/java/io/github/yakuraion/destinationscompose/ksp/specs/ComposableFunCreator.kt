@@ -33,7 +33,7 @@ class ComposableFunCreator : FunCreator {
             .addStatement("")
             .addComposableArgumentsStatement(screen)
             .addStatement("")
-            .addComposableCallStatement {
+            .addComposableCallStatement(screen) {
                 addScreenCallStatement(screen)
             }
             .build()
@@ -80,8 +80,8 @@ class ComposableFunCreator : FunCreator {
             .run {
                 navArguments.fold(this) { builder, navArgument ->
                     val defaultValueEncoded = navArgument.defaultValue?.value
-                        ?.let {"Base64.encodeToString(\"$it\".toByteArray(), Base64.NO_WRAP)"
-                        } ?: "null"
+                        ?.let { "Base64.encodeToString(\"$it\".toByteArray(), Base64.NO_WRAP)" }
+                        ?: "null"
                     builder
                         .addStatement("    navArgument(\"${navArgument.name}\")·{")
                         .addStatement("        type·= NavType.StringType;")
@@ -94,6 +94,7 @@ class ComposableFunCreator : FunCreator {
     }
 
     private fun FunSpec.Builder.addComposableCallStatement(
+        screen: ScreenDeclaration,
         insideCode: FunSpec.Builder.() -> FunSpec.Builder,
     ): FunSpec.Builder {
         return this
@@ -105,7 +106,7 @@ class ComposableFunCreator : FunCreator {
             .addStatement("    popEnterTransition·= popEnterTransition,")
             .addStatement("    popExitTransition·= popExitTransition,")
             .beginControlFlow(")")
-            .addStatement("$BACK_STACK_NAME ->")
+            .addStatement(if (screen.navArgParameters.any { it.usesBackStackEntry }) "$BACK_STACK_NAME ->" else "_ ->")
             .insideCode()
             .endControlFlow()
     }

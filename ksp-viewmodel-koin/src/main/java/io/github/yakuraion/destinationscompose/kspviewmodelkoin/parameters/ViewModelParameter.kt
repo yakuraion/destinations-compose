@@ -16,14 +16,17 @@ import io.github.yakuraion.destinationscompose.kspcore.parameters.serializable.S
 @OptIn(KspExperimental::class)
 class ViewModelParameter(ksParameter: KSValueParameter) : NavArgParameter(ksParameter) {
 
+    override val usesBackStackEntry: Boolean
+        get() = innerParameters.isNotEmpty()
+
     private val ksClassDeclaration: KSClassDeclaration = getViewModelKsClassDeclaration(ksParameter) ?: error("ksParameter is not ViewModel")
 
     private val viewModelClassName: String = ksClassDeclaration.qualifiedName?.asString().orEmpty()
 
     private val innerParametersExtractors = listOf(
-            PrimitiveParameterConverter(),
-            ParcelableParameterConverter(),
-            SerializableParameterConverter(),
+        PrimitiveParameterConverter(),
+        ParcelableParameterConverter(),
+        SerializableParameterConverter(),
     )
 
     private val innerParameters: List<NavArgParameter> = extractInnerParameters()
@@ -34,20 +37,20 @@ class ViewModelParameter(ksParameter: KSValueParameter) : NavArgParameter(ksPara
 
     private fun extractInnerParameters(): List<NavArgParameter> {
         return ksClassDeclaration
-                .primaryConstructor
-                ?.parameters
-                .orEmpty()
-                .filter { it.getAnnotationsByType(NotDestinationParameter::class).none() }
-                .mapNotNull { ksInnerParameter ->
-                    innerParametersExtractors.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
-                }
+            .primaryConstructor
+            ?.parameters
+            .orEmpty()
+            .filter { it.getAnnotationsByType(NotDestinationParameter::class).none() }
+            .mapNotNull { ksInnerParameter ->
+                innerParametersExtractors.firstNotNullOfOrNull { it.convert(ksInnerParameter) }
+            }
     }
 
     override fun getImports(): List<Import> {
         val innerParametersImports = innerParameters.flatMap { it.getImports() }
         val viewModelParameterImports = listOf(
-                Import("org.koin.androidx.compose", "koinViewModel"),
-                Import("org.koin.core.parameter", "parametersOf"),
+            Import("org.koin.androidx.compose", "koinViewModel"),
+            Import("org.koin.core.parameter", "parametersOf"),
         )
         return (innerParametersImports + viewModelParameterImports).distinct()
     }
@@ -61,9 +64,9 @@ class ViewModelParameter(ksParameter: KSValueParameter) : NavArgParameter(ksPara
                 builder.createParameterValFromBackStack(backStackName)
             }
         }
-                .beginControlFlow("val $parameterValFromBackStackName = koinViewModel<$viewModelClassName>")
-                .addStatement("parametersOf(${innerParametersVals.joinToString(separator = ", ")})")
-                .endControlFlow()
+            .beginControlFlow("val $parameterValFromBackStackName = koinViewModel<$viewModelClassName>")
+            .addStatement("parametersOf(${innerParametersVals.joinToString(separator = ", ")})")
+            .endControlFlow()
     }
 
     override fun getNavigateParameters(): List<NavigateParameter> = navigateParameters

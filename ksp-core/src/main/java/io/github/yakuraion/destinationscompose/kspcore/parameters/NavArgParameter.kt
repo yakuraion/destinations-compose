@@ -11,6 +11,8 @@ abstract class NavArgParameter(ksParameter: KSValueParameter) : Parameter(ksPara
 
     val parameterValFromBackStackName = name
 
+    open val usesBackStackEntry = true
+
     @OptIn(KspExperimental::class)
     val defaultValueLiteral: String? = ksParameter
         .getAnnotationsByType(DestinationOptionalParameter::class)
